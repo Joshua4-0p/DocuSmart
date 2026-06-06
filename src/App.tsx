@@ -22,6 +22,9 @@ import { LanguagesPage } from '@/pages/app/profile/LanguagesPage'
 import { ReferencesPage } from '@/pages/app/profile/ReferencesPage'
 import { SettingsPage } from '@/pages/app/SettingsPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { DocumentsListPage } from '@/pages/app/documents/DocumentsListPage'
+import { NewDocumentPage } from '@/pages/app/documents/NewDocumentPage'
+import { BuilderPage } from '@/pages/builder/BuilderPage'
 
 export function App() {
   return (
@@ -43,8 +46,14 @@ export function App() {
 
         {/* Protected app */}
         <Route element={<ProtectedRoute />}>
+          {/* Builder — full-screen, no AppLayout wrapper */}
+          <Route path="builder/:documentId" element={<BuilderPage />} />
+
+          {/* Standard app shell */}
           <Route element={<AppLayout />}>
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="documents" element={<DocumentsListPage />} />
+            <Route path="documents/new" element={<NewDocumentPage />} />
             <Route path="profile" element={<ProfileHubPage />} />
             <Route path="profile/personal" element={<PersonalDetailsPage />} />
             <Route path="profile/education" element={<EducationPage />} />
@@ -57,7 +66,6 @@ export function App() {
             <Route path="profile/languages" element={<LanguagesPage />} />
             <Route path="profile/references" element={<ReferencesPage />} />
             <Route path="settings" element={<SettingsPage />} />
-            {/* Redirect bare /app to dashboard */}
             <Route path="app" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Route>

@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
+  LayoutDashboard,
+  FileText,
   User,
   GraduationCap,
   Briefcase,
@@ -13,10 +15,16 @@ import {
   Users,
   ChevronLeft,
   ChevronRight,
+  Settings,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+
+const primaryNav = [
+  { key: 'dashboard', icon: LayoutDashboard, path: '/dashboard' },
+  { key: 'documents', icon: FileText, path: '/documents' },
+] as const
 
 const profileSections = [
   { key: 'personal', icon: User, path: '/profile/personal' },
@@ -49,11 +57,11 @@ export function AppSidebar({ collapsed, onToggle, sectionCounts }: AppSidebarPro
         collapsed ? 'w-16' : 'w-56',
       )}
     >
-      {/* Top */}
+      {/* Toggle header */}
       <div className="flex items-center justify-between px-4 h-14 border-b border-sidebar-border">
-        {!collapsed && isProfileSection && (
+        {!collapsed && (
           <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            {t('nav.profile')}
+            {isProfileSection ? t('nav.profile') : 'Menu'}
           </span>
         )}
         <Button
@@ -66,10 +74,53 @@ export function AppSidebar({ collapsed, onToggle, sectionCounts }: AppSidebarPro
         </Button>
       </div>
 
-      {/* Profile sections nav */}
-      <nav className="flex-1 py-3 overflow-y-auto">
+      <nav className="flex-1 py-3 overflow-y-auto flex flex-col gap-px px-2">
+        {/* Primary nav */}
+        {primaryNav.map(({ key, icon: Icon, path }) => (
+          <NavLink
+            key={key}
+            to={path}
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition-colors min-h-11',
+                isActive
+                  ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent/50',
+                collapsed && 'justify-center px-0',
+              )
+            }
+            title={collapsed ? t(`nav.${key}`) : undefined}
+          >
+            <Icon className="size-4 shrink-0" />
+            {!collapsed && <span className="flex-1 truncate">{t(`nav.${key}`)}</span>}
+          </NavLink>
+        ))}
+
+        {/* Divider */}
+        <div className="my-1 border-t border-sidebar-border" />
+
+        {/* Profile hub link */}
+        <NavLink
+          to="/profile"
+          end
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition-colors min-h-11',
+              isActive || isProfileSection
+                ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+                : 'text-sidebar-foreground hover:bg-sidebar-accent/50',
+              collapsed && 'justify-center px-0',
+            )
+          }
+          title={collapsed ? t('nav.profile') : undefined}
+        >
+          <User className="size-4 shrink-0" />
+          {!collapsed && <span className="flex-1 truncate">{t('nav.profile')}</span>}
+        </NavLink>
+
+        {/* Profile sub-sections — visible when in profile area */}
         {isProfileSection && (
-          <div className={cn('px-2 flex flex-col gap-0.5')}>
+          <div className={cn('ml-2 flex flex-col gap-px border-l border-sidebar-border pl-2', collapsed && 'ml-0 border-l-0 pl-0')}>
             {profileSections.map(({ key, icon: Icon, path }) => {
               const count = sectionCounts[key] ?? 0
               const isFilled = count > 0 || key === 'personal'
@@ -79,7 +130,7 @@ export function AppSidebar({ collapsed, onToggle, sectionCounts }: AppSidebarPro
                   to={path}
                   className={({ isActive }) =>
                     cn(
-                      'flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition-colors min-h-[44px]',
+                      'flex items-center gap-3 rounded-lg px-2 py-1.5 text-xs transition-colors min-h-9',
                       isActive
                         ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
                         : 'text-sidebar-foreground hover:bg-sidebar-accent/50',
@@ -89,7 +140,7 @@ export function AppSidebar({ collapsed, onToggle, sectionCounts }: AppSidebarPro
                   title={collapsed ? t(`profile.${key}`) : undefined}
                 >
                   <div className="relative shrink-0">
-                    <Icon className="size-4" />
+                    <Icon className="size-3.5" />
                     {isFilled && (
                       <span className="absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-ds-success-foreground" />
                     )}
@@ -105,6 +156,26 @@ export function AppSidebar({ collapsed, onToggle, sectionCounts }: AppSidebarPro
             })}
           </div>
         )}
+
+        {/* Bottom settings */}
+        <div className="mt-auto pt-2 border-t border-sidebar-border">
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 rounded-lg px-2 py-2 text-sm transition-colors min-h-11',
+                isActive
+                  ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent/50',
+                collapsed && 'justify-center px-0',
+              )
+            }
+            title={collapsed ? t('nav.settings') : undefined}
+          >
+            <Settings className="size-4 shrink-0" />
+            {!collapsed && <span className="flex-1 truncate">{t('nav.settings')}</span>}
+          </NavLink>
+        </div>
       </nav>
     </aside>
   )
