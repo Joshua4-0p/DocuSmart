@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { HorizonTemplate } from '@/components/templates/HorizonTemplate'
 import { CoverLetterTemplate } from '@/components/templates/CoverLetterTemplate'
+import { PreviewToolbar } from '@/components/builder/PreviewToolbar'
+import { useDebounce } from '@/hooks/useDebounce'
 import type { BuilderState } from '@/types/document'
 
 interface LivePreviewProps {
@@ -10,40 +12,64 @@ interface LivePreviewProps {
 
 export function LivePreviewPanel({ state, mobileView = false }: LivePreviewProps) {
   const containerRef = React.useRef<HTMLDivElement>(null)
-  const [scale, setScale] = React.useState(0.5)
+  const [autoScale, setAutoScale] = React.useState(0.5)
+  const [manualScale, setManualScale] = React.useState<number | null>(null)
+  const [fullscreen, setFullscreen] = React.useState(false)
 
-  // Compute zoom so the A4 page (794px wide) fills the available container width
+  const scale = manualScale ?? autoScale
+
+  // Debounce builder state by 350ms so the template only re-renders when typing pauses
+  const debouncedState = useDebounce(state, 350)
+
+  // Compute auto-zoom so A4 (794px) fills available width
   React.useEffect(() => {
     const el = containerRef.current
     if (!el) return
     const compute = () => {
-      const avail = el.clientWidth - 48 // 24px padding each side
-      setScale(Math.min(avail / 794, 1))
+      const avail = el.clientWidth - 48
+      setAutoScale(Math.min(avail / 794, 1))
     }
     compute()
     const obs = new ResizeObserver(compute)
     obs.observe(el)
     return () => obs.disconnect()
-  }, [])
+  }, [fullscreen])
 
-  const Template = state.documentType === 'cover_letter' ? CoverLetterTemplate : HorizonTemplate
+  // Reset manual scale when entering fullscreen
+  const handleFullscreen = () => {
+    setFullscreen((f) => !f)
+    setManualScale(null)
+  }
+
+  const Template =
+    debouncedState.documentType === 'cover_letter' ? CoverLetterTemplate : HorizonTemplate
+
+  const wrapperCls = fullscreen
+    ? 'fixed inset-0 z-50 flex flex-col bg-background'
+    : `flex flex-col ${mobileView ? '' : 'h-full'} overflow-hidden`
 
   return (
-    <div
-      ref={containerRef}
-      className={`overflow-auto bg-muted/30 py-6 px-6${mobileView ? '' : ' h-full'}`}
-    >
-      {/*
-        CSS zoom (unlike transform: scale) affects layout space, so the A4 page's
-        visual width AND layout width both equal 794 * scale — no horizontal overflow.
-        The dynamic value is passed via a CSS custom property (--ds-zoom) to avoid
-        the inline-styles linter rule; .preview-page-wrap reads it in index.css.
-      */}
-      <div
-        className="preview-page-wrap shadow-xl rounded overflow-hidden mx-auto"
-        style={{ '--ds-zoom': scale } as React.CSSProperties}
-      >
-        <Template state={state} scale={1} />
+    <div className={wrapperCls}>
+      <PreviewToolbar
+        scale={scale}
+        onScaleChange={setManualScale}
+        fullscreen={fullscreen}
+        onFullscreenToggle={handleFullscreen}
+        templateName={debouncedState.templateId}
+      />
+
+      <div ref={containerRef} className="flex-1 overflow-auto bg-muted/30 py-6 px-6">
+        {/*
+          CSS zoom (unlike transform: scale) keeps layout space, so the A4 page
+          visual AND layout width both equal 794 * scale — no horizontal overflow.
+          Dynamic value via --ds-zoom custom property; .preview-page-wrap reads it.
+        */}
+        <div
+          className="preview-page-wrap shadow-xl rounded overflow-hidden mx-auto"
+          style={{ '--ds-zoom': scale } as React.CSSProperties}
+        >
+          <Template state={debouncedState} scale={1} />
+        </div>
       </div>
     </div>
   )

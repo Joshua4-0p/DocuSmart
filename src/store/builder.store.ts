@@ -8,6 +8,14 @@ import type {
 } from '../types/document'
 import { DEFAULT_SECTION_ORDER } from '../types/document'
 import { documentApi } from '../lib/api/document.api'
+import { getProfileSnapshot } from '../lib/api/profile.api'
+
+export interface CompletionSuggestion {
+  id: string
+  textKey: string
+  stepLink: number
+  points: number
+}
 
 interface BuilderStore extends BuilderState {
   // Actions
@@ -17,6 +25,7 @@ interface BuilderStore extends BuilderState {
   toggleSection: (key: SectionKey) => void
   reorderSections: (order: string[]) => void
   setGeneratedContent: (key: string, content: string) => void
+  clearGeneratedContent: () => void
   setJDMatchResult: (result: JDMatchResult) => void
   setStrengthScore: (score: StrengthScore) => void
   markSaved: () => void
@@ -102,6 +111,11 @@ export const useBuilderStore = create<BuilderStore>()((set, get) => ({
     get().persistDraft()
   },
 
+  clearGeneratedContent: () => {
+    set({ generatedContent: {}, hasUnsavedChanges: true })
+    get().persistDraft()
+  },
+
   setJDMatchResult: (result) => {
     set({ jdMatchResult: result, hasUnsavedChanges: true })
     get().persistDraft()
@@ -145,16 +159,93 @@ export const useBuilderStore = create<BuilderStore>()((set, get) => ({
   },
 }))
 
-// Completeness meter (FR-023)
-// Score = (filled sections / 7) × 60 + (AI content sections / 3) × 25 + keyword_match × 15
-export function calcCompleteness(state: BuilderState): number {
-  const sectionScore = Math.min(state.selectedSections.length / 7, 1) * 60
-  const aiSections = ['summary', 'experience', 'skills'].filter(
+// Completeness meter — Phase 3 formula (FR-023)
+export function calcCompletenessData(state: BuilderState): {
+  score: number
+  suggestions: CompletionSuggestion[]
+} {
+  const profile = getProfileSnapshot()
+  const suggestions: CompletionSuggestion[] = []
+  let score = 0
+
+  // ── Base score (0–60) ────────────────────────────────────────────────
+  const hasSummary = Boolean(state.generatedContent['summary'] || profile.personal?.summary)
+  if (hasSummary) { score += 10 } else {
+    suggestions.push({ id: 'summary', textKey: 'builder.sgAddSummary', stepLink: 4, points: 10 })
+  }
+
+  const hasExperience = profile.experience.length > 0
+  if (hasExperience) { score += 15 } else {
+    suggestions.push({ id: 'experience', textKey: 'builder.sgAddExperience', stepLink: 5, points: 15 })
+  }
+
+  const hasEducation = profile.education.length > 0
+  if (hasEducation) { score += 10 } else {
+    suggestions.push({ id: 'education', textKey: 'builder.sgAddEducation', stepLink: 6, points: 10 })
+  }
+
+  const hasSkills = profile.skills.length >= 5
+  if (hasSkills) { score += 10 } else {
+    suggestions.push({ id: 'skills', textKey: 'builder.sgAddSkills', stepLink: 7, points: 10 })
+  }
+
+  const hasContact = Boolean(
+    profile.personal?.firstName && profile.personal?.phone && profile.personal?.country,
+  )
+  if (hasContact) { score += 5 } else {
+    suggestions.push({ id: 'contact', textKey: 'builder.sgCompleteContact', stepLink: 3, points: 5 })
+  }
+
+  const hasPhoto = Boolean(profile.personal?.avatarUrl)
+  if (hasPhoto) { score += 5 } else {
+    suggestions.push({ id: 'photo', textKey: 'builder.sgAddPhoto', stepLink: 3, points: 5 })
+  }
+
+  const hasReferences = profile.references.length > 0
+  if (hasReferences) { score += 5 }
+
+  // ── Content quality (0–25) ───────────────────────────────────────────
+  const aiSectionsUsed = ['summary', 'experience', 'skills', 'projects'].filter(
     (s) => state.generatedContent[s],
   ).length
-  const aiScore = (aiSections / 3) * 25
-  const jdScore = state.jdMatchResult
-    ? Math.min(state.jdMatchResult.matchedSkills.length / 5, 1) * 15
+  if (aiSectionsUsed >= 1) { score += 5 } else {
+    suggestions.push({ id: 'ai', textKey: 'builder.sgUseAI', stepLink: 4, points: 5 })
+  }
+
+  const summaryAI = Boolean(state.generatedContent['summary'])
+  if (summaryAI) { score += 5 }
+
+  const expContent = state.generatedContent['experience'] ?? ''
+  const avgBulletLen = expContent.length > 0
+    ? expContent.split('\n').filter(Boolean).reduce((acc, l) => acc + l.length, 0) /
+      Math.max(expContent.split('\n').filter(Boolean).length, 1)
     : 0
-  return Math.round(sectionScore + aiScore + jdScore)
+  if (avgBulletLen > 80) { score += 5 }
+
+  // Count quantified results (patterns like numbers, %, X)
+  const quantMatches = (expContent.match(/\d+\s*%|\d+x|\d+\+|\$\d+|[€₣]\d+|\d+\s+(users|clients|sales|revenue)/gi) ?? []).length
+  if (quantMatches >= 3) { score += 10 } else {
+    suggestions.push({ id: 'quantify', textKey: 'builder.sgQuantify', stepLink: 5, points: 10 })
+  }
+
+  // ── Relevance (0–15) ─────────────────────────────────────────────────
+  if (state.jdMatchResult) {
+    const total = state.jdMatchResult.matchedSkills.length + state.jdMatchResult.unmatchedSkills.length
+    const matchPct = total > 0 ? state.jdMatchResult.matchedSkills.length / total : 0
+    if (matchPct >= 0.6) { score += 15 }
+    else if (matchPct >= 0.4) { score += 10 }
+    else { score += 5 }
+  } else {
+    suggestions.push({ id: 'jd', textKey: 'builder.sgPasteJD', stepLink: 2, points: 15 })
+  }
+
+  // Sort suggestions by highest points first, take top 3
+  suggestions.sort((a, b) => b.points - a.points)
+
+  return { score: Math.min(100, Math.round(score)), suggestions }
+}
+
+// Lightweight version for components that only need the number
+export function calcCompleteness(state: BuilderState): number {
+  return calcCompletenessData(state).score
 }

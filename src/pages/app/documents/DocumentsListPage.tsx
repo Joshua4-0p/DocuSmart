@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit2, Copy, Trash2, Download, FileText, FilePlus } from 'lucide-react'
+import { Plus, Edit2, Copy, Trash2, Download, FileText, FilePlus, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -41,6 +41,7 @@ export function DocumentsListPage() {
   const [sort, setSort] = React.useState<SortKey>('updated')
   const [deleteId, setDeleteId] = React.useState<string | null>(null)
   const [duplicatingId, setDuplicatingId] = React.useState<string | null>(null)
+  const [adaptingId, setAdaptingId] = React.useState<string | null>(null)
 
   const load = React.useCallback(async () => {
     setLoading(true)
@@ -72,6 +73,16 @@ export function DocumentsListPage() {
       void navigate(`/builder/${copy.id}`)
     } finally {
       setDuplicatingId(null)
+    }
+  }
+
+  const handleAdaptForRole = async (id: string) => {
+    setAdaptingId(id)
+    try {
+      const copy = await documentApi.adaptForNewRole(id)
+      void navigate(`/builder/${copy.id}?step=2`)
+    } finally {
+      setAdaptingId(null)
     }
   }
 
@@ -199,6 +210,15 @@ export function DocumentsListPage() {
                     className="size-8 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-50"
                   >
                     <Copy className="size-3.5 text-muted-foreground" />
+                  </button>
+                  <button
+                    type="button"
+                    title={t('builder.adaptForRole')}
+                    onClick={() => void handleAdaptForRole(doc.id)}
+                    disabled={adaptingId === doc.id}
+                    className="size-8 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors disabled:opacity-50"
+                  >
+                    <RefreshCw className={`size-3.5 text-muted-foreground ${adaptingId === doc.id ? 'animate-spin' : ''}`} />
                   </button>
                   <button
                     type="button"

@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ProfileEntryList, EntryCard } from '@/components/shared/ProfileEntryList'
+import { UniversityAutocomplete } from '@/components/profile/UniversityAutocomplete'
 import { educationSchema, type EducationFormValues } from '@/lib/schemas/profile.schema'
 import { profileApi } from '@/lib/api/profile.api'
 import type { Education } from '@/types/profile'
@@ -46,8 +47,19 @@ function EducationForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
       <div className="flex flex-col gap-1.5">
-        <Label>Institution *</Label>
-        <Input placeholder="University of Yaoundé I" aria-invalid={!!errors.institution} {...register('institution')} />
+        <Label htmlFor="institution">{t('builder.institutionLabel')} *</Label>
+        <Controller
+          control={control}
+          name="institution"
+          render={({ field }) => (
+            <UniversityAutocomplete
+              id="institution"
+              value={field.value}
+              onChange={field.onChange}
+              placeholder="University of Yaoundé I"
+            />
+          )}
+        />
         {errors.institution && <p className="text-xs text-destructive">{t('common.required')}</p>}
       </div>
       <div className="flex flex-col gap-1.5">

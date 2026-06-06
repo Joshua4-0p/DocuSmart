@@ -1,7 +1,9 @@
 import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
-import { calcCompleteness } from '@/store/builder.store'
+import { calcCompletenessData, useBuilderStore } from '@/store/builder.store'
+import { CompletenessRing } from '@/components/builder/CompletenessRing'
+import { SectionOrderPanel } from '@/components/builder/SectionOrderPanel'
 import type { BuilderState } from '@/types/document'
 
 const STEPS = [
@@ -34,25 +36,19 @@ export function StepSidebar({
   onStepClick: (step: number) => void
 }) {
   const { t } = useTranslation()
-  const completeness = calcCompleteness(state)
+  const { score, suggestions } = calcCompletenessData(state)
+  const { reorderSections } = useBuilderStore()
 
   return (
     <aside className="hidden lg:flex flex-col w-64 shrink-0 border-r border-border bg-card overflow-y-auto">
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            {t('builder.completeness')}
-          </span>
-          <span className="text-sm font-bold text-primary">{completeness}%</span>
-        </div>
-        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-          <div
-            className="h-full bg-primary rounded-full transition-all duration-500"
-            style={{ width: `${completeness}%` }}
-          />
-        </div>
-      </div>
+      {/* Completeness ring + suggestions */}
+      <CompletenessRing
+        score={score}
+        suggestions={suggestions}
+        onStepClick={onStepClick}
+      />
 
+      {/* Step navigation */}
       <nav className="flex-1 p-3">
         {STEPS.map((nameKey, i) => {
           const stepNum = i + 1
@@ -77,11 +73,11 @@ export function StepSidebar({
         })}
       </nav>
 
-      <div className="p-4 border-t border-border">
-        <p className="text-xs text-muted-foreground text-center">
-          {t('builder.changeTemplate')}
-        </p>
-      </div>
+      {/* Section order panel */}
+      <SectionOrderPanel
+        sections={state.sectionOrder}
+        onChange={reorderSections}
+      />
     </aside>
   )
 }

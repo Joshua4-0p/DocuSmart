@@ -1,9 +1,12 @@
 import * as React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { X, ArrowLeft, Pencil, Check } from 'lucide-react'
+import { X, ArrowLeft, Pencil, Check, LayoutList } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useBuilderStore } from '@/store/builder.store'
 import { StepSidebar } from '@/components/builder/StepSidebar'
+import { OfflineBanner } from '@/components/builder/OfflineBanner'
+import { MobileStepsSheet } from '@/components/builder/MobileStepsSheet'
+import { useOfflineSync } from '@/hooks/useOfflineSync'
 
 interface BuilderLayoutProps {
   children: React.ReactNode
@@ -14,8 +17,10 @@ export function BuilderLayout({ children, onStepClick }: BuilderLayoutProps) {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const state = useBuilderStore()
+  const { status, syncedAt } = useOfflineSync()
   const [editingTitle, setEditingTitle] = React.useState(false)
   const [titleValue, setTitleValue] = React.useState('')
+  const [stepsOpen, setStepsOpen] = React.useState(false)
 
   // Warn on browser close / refresh when there are unsaved changes
   React.useEffect(() => {
@@ -44,6 +49,9 @@ export function BuilderLayout({ children, onStepClick }: BuilderLayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      {/* Offline banner */}
+      <OfflineBanner status={status} syncedAt={syncedAt} />
+
       {/* Builder Navbar */}
       <header className="h-14 border-b border-border bg-card flex items-center px-4 gap-4 shrink-0 z-30">
         <Link
@@ -67,6 +75,8 @@ export function BuilderLayout({ children, onStepClick }: BuilderLayoutProps) {
               <input
                 autoFocus
                 value={titleValue}
+                aria-label={t('builder.step2Title')}
+                placeholder="Document title"
                 onChange={(e) => setTitleValue(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') saveTitle()
@@ -74,7 +84,7 @@ export function BuilderLayout({ children, onStepClick }: BuilderLayoutProps) {
                 }}
                 className="text-sm font-semibold bg-muted/50 border border-border rounded-lg px-3 py-1 min-w-48 focus:outline-none focus:ring-2 focus:ring-primary/30"
               />
-              <button type="button" onClick={saveTitle} className="text-primary">
+              <button type="button" onClick={saveTitle} aria-label={t('common.save')} className="text-primary">
                 <Check className="size-4" />
               </button>
             </div>
@@ -89,6 +99,17 @@ export function BuilderLayout({ children, onStepClick }: BuilderLayoutProps) {
             </button>
           )}
         </div>
+
+        {/* Mobile steps FAB */}
+        <button
+          type="button"
+          onClick={() => setStepsOpen(true)}
+          className="lg:hidden flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          aria-label={t('builder.mobileSteps')}
+        >
+          <LayoutList className="size-4" />
+          <span className="hidden sm:inline">{t('builder.mobileSteps')}</span>
+        </button>
 
         <button
           type="button"
@@ -110,6 +131,14 @@ export function BuilderLayout({ children, onStepClick }: BuilderLayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Mobile steps sheet */}
+      <MobileStepsSheet
+        open={stepsOpen}
+        onOpenChange={setStepsOpen}
+        currentStep={state.step}
+        onStepClick={onStepClick}
+      />
     </div>
   )
 }

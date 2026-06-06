@@ -106,6 +106,34 @@ export const documentApi = {
     return delay(copy)
   },
 
+  adaptForNewRole: (id: string): Promise<DocDocument> => {
+    const docs = loadDocs()
+    const source = docs.find((d) => d.id === id)
+    if (!source) throw new Error('Document not found')
+    const now = new Date().toISOString()
+    const copy: DocDocument = {
+      ...source,
+      id: makeId(),
+      title: `${source.title} (new role)`,
+      // Clear context fields that are role-specific
+      context: {
+        ...source.context,
+        jobTitle: '',
+        companyName: undefined,
+        jobDescription: undefined,
+      },
+      // Clear AI-generated content so the new role gets fresh content
+      generatedContent: {},
+      jdMatchResult: undefined,
+      step: 2,  // Start at context step so user sets the new role
+      createdAt: now,
+      updatedAt: now,
+    }
+    docs.unshift(copy)
+    saveDocs(docs)
+    return delay(copy)
+  },
+
   saveDraft: (id: string, builderState: object): void => {
     localStorage.setItem(`builder_draft_${id}`, JSON.stringify(builderState))
   },

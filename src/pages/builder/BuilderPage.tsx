@@ -19,8 +19,6 @@ import { Step10Review } from './steps/Step10Review'
 import { DEFAULT_SECTION_ORDER } from '@/types/document'
 
 const TOTAL_STEPS = 10
-
-// Show preview panel only on steps 3–10
 const SHOW_PREVIEW_FROM = 3
 
 export function BuilderPage() {
@@ -28,6 +26,7 @@ export function BuilderPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const navigate = useNavigate()
   const { t } = useTranslation()
+  // Reactive store snapshot — safe to call in render
   const builderState = useBuilderStore()
   const [loading, setLoading] = React.useState(true)
   const [previewMode, setPreviewMode] = React.useState(false)
@@ -35,14 +34,13 @@ export function BuilderPage() {
   const stepParam = parseInt(searchParams.get('step') ?? '1', 10)
   const step = isNaN(stepParam) ? 1 : Math.max(1, Math.min(stepParam, TOTAL_STEPS))
 
-  // Load document on mount
   React.useEffect(() => {
     if (!documentId) { void navigate('/documents'); return }
     setLoading(true)
     documentApi.get(documentId).then((doc) => {
       if (!doc) { void navigate('/documents'); return }
 
-      // Check for localStorage draft (NFR-029)
+      // Restore localStorage draft if available (NFR-029)
       const draft = documentApi.loadDraft(documentId) as Partial<typeof builderState> | null
 
       builderState.initBuilder(documentId, {
@@ -86,7 +84,6 @@ export function BuilderPage() {
     )
   }
 
-  const currentBuilderState = useBuilderStore.getState()
   const showPreview = step >= SHOW_PREVIEW_FROM
   const isMobilePreview = previewMode
 
@@ -108,7 +105,7 @@ export function BuilderPage() {
 
   return (
     <BuilderLayout onStepClick={handleStepClick}>
-      {/* Mobile: form/preview toggle (UI-003) */}
+      {/* Mobile: form/preview toggle tabs (UI-003) */}
       {showPreview && (
         <div className="lg:hidden flex border-b border-border">
           <button
@@ -145,12 +142,12 @@ export function BuilderPage() {
           />
         </div>
 
-        {/* Live preview — right side (desktop always, mobile only when preview tab active) */}
+        {/* Live preview — right side. State is passed directly; LivePreviewPanel debounces internally */}
         {showPreview && (
           <div
             className={`lg:block lg:w-1/2 border-l border-border overflow-hidden ${isMobilePreview ? 'block w-full' : 'hidden'}`}
           >
-            <LivePreviewPanel state={currentBuilderState} />
+            <LivePreviewPanel state={builderState} />
           </div>
         )}
       </div>
