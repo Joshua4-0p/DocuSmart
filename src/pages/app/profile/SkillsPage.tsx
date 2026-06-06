@@ -5,7 +5,7 @@ import { X, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
 import { profileApi } from '@/lib/api/profile.api'
 import type { Skill, ProficiencyLevel } from '@/types/profile'
 

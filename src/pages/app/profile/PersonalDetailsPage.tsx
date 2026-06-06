@@ -50,7 +50,7 @@ export function PersonalDetailsPage() {
 
   const saveFn = React.useCallback(
     async (data: PersonalDetailsFormValues) => {
-      await profileApi.updatePersonal(data)
+      await profileApi.updatePersonal({ ...data, cameroonian: data.cameroonian ?? false })
       updateUser({ name: `${data.firstName} ${data.lastName}`.trim() })
     },
     [updateUser],
@@ -74,7 +74,7 @@ export function PersonalDetailsPage() {
 
   const onSubmit = async (data: PersonalDetailsFormValues) => {
     try {
-      await profileApi.updatePersonal(data)
+      await profileApi.updatePersonal({ ...data, cameroonian: data.cameroonian ?? false })
       toast(t('common.saved'), 'success')
     } catch {
       toast(t('common.error'), 'error')

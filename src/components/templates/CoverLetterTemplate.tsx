@@ -1,4 +1,3 @@
-import * as React from 'react'
 import type { BuilderState } from '../../types/document'
 import { getProfileSnapshot } from '../../lib/api/profile.api'
 

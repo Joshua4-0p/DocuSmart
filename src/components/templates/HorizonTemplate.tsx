@@ -1,6 +1,5 @@
 import * as React from 'react'
 import type { BuilderState } from '../../types/document'
-import type { PersonalDetails, Education, Experience, Skill, Project, Certification, Volunteer, Publication, Language, Reference } from '../../types/profile'
 import { getProfileSnapshot } from '../../lib/api/profile.api'
 
 interface HorizonProps {
@@ -128,7 +127,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export function HorizonTemplate({ state, scale = 1 }: HorizonProps) {
   const profile = getProfileSnapshot()
-  const { selectedSections, sectionOrder, generatedContent, context } = state
+  const { selectedSections, sectionOrder, generatedContent } = state
 
   const personal = profile.personal
   const isIncluded = (key: string) => selectedSections.includes(key)

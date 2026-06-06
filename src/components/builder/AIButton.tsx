@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { Wand2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'

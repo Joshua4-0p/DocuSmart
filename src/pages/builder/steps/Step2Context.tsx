@@ -20,7 +20,7 @@ const COUNTRIES = [
 
 export function Step2Context() {
   const { t } = useTranslation()
-  const { context, setContext, jdMatchResult, setJDMatchResult } = useBuilderStore()
+  const { context, setContext, jdMatchResult, setJDMatchResult, toggleSection, selectedSections } = useBuilderStore()
   const [jdOpen, setJdOpen] = React.useState(false)
   const [jdText, setJdText] = React.useState(context.jobDescription ?? '')
   const [analysing, setAnalysing] = React.useState(false)
@@ -36,6 +36,12 @@ export function Step2Context() {
       const result = await aiApi.analyzeJD(jdText, skillNames)
       setJDMatchResult(result)
       setContext({ jobDescription: jdText })
+      // FR-017: auto-select sections recommended by JD analysis
+      for (const sec of result.recommendedSections) {
+        if (!selectedSections.includes(sec)) {
+          toggleSection(sec as Parameters<typeof toggleSection>[0])
+        }
+      }
     } catch {
       setAnalysisFailed(true)
     } finally {
@@ -84,6 +90,7 @@ export function Step2Context() {
           </Label>
           <select
             id="companyType"
+            title={t('newDocument.companyType')}
             value={context.companyType}
             onChange={(e) => setContext({ companyType: e.target.value as typeof context.companyType })}
             className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
@@ -104,6 +111,7 @@ export function Step2Context() {
           </Label>
           <select
             id="targetCountry"
+            title={t('newDocument.targetCountry')}
             value={context.targetCountry}
             onChange={(e) => setContext({ targetCountry: e.target.value })}
             className="w-full h-10 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"

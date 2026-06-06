@@ -200,9 +200,6 @@ export const aiApi = {
       await sleep(rand(2500, 4000))
 
       const hasSummary = Boolean(generatedContent['summary'])
-      const hasExperience = selectedSections.includes('experience')
-      const hasSkills = selectedSections.includes('skills')
-      const hasEducation = selectedSections.includes('education')
 
       const completeness = Math.min(
         100,
@@ -252,8 +249,8 @@ export const aiApi = {
   // FR-031: Select most relevant projects for a role
   selectRelevantProjects: async (
     projectIds: string[],
-    projectNames: string[],
-    targetRole: string,
+    _projectNames: string[],
+    _targetRole: string,
   ): Promise<string[]> => {
     await sleep(rand(800, 1400))
     // Simple mock: return first 2-3 projects as "most relevant"

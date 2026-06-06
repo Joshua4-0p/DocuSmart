@@ -1,5 +1,4 @@
-import * as React from 'react'
-import { Check, Circle } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { calcCompleteness } from '@/store/builder.store'

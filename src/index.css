@@ -78,6 +78,16 @@
     zoom: var(--ds-zoom, 1);
     width: 794px;
   }
+
+  /* Strength score card — dynamic bar width via --ds-bar-w CSS custom property */
+  .score-bar-fill {
+    width: var(--ds-bar-w, 0%);
+  }
+
+  /* SVG ring circle transition — avoids inline style */
+  .score-ring-circle {
+    transition: stroke-dashoffset 1s ease;
+  }
 }
 
 @layer base {

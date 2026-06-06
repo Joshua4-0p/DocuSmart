@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { GripVertical, RotateCcw } from 'lucide-react'
+import { GripVertical } from 'lucide-react'
 import { ToggleCard } from '@/components/builder/ToggleCard'
 import { AIButton } from '@/components/builder/AIButton'
 import { DailyLimitBadge } from '@/components/builder/DailyLimitBadge'

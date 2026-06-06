@@ -1,12 +1,10 @@
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
-import { RotateCcw } from 'lucide-react'
 import { AIButton } from '@/components/builder/AIButton'
 import { AILoadingOverlay } from '@/components/builder/AILoadingOverlay'
 import { DailyLimitBadge } from '@/components/builder/DailyLimitBadge'
 import { useBuilderStore } from '@/store/builder.store'
 import { aiApi } from '@/lib/api/ai.api'
-import { getProfileSnapshot } from '@/lib/api/profile.api'
 
 export function Step4Summary() {
   const { t } = useTranslation()

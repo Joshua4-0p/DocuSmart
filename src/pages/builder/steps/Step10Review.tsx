@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import { StrengthScoreCard } from '@/components/builder/StrengthScoreCard'
 import { ExportButton } from '@/components/builder/ExportButton'
 import { CompanionDocPrompt } from '@/components/builder/CompanionDocPrompt'
-import { AILoadingOverlay } from '@/components/builder/AILoadingOverlay'
 import { useBuilderStore } from '@/store/builder.store'
 import { aiApi } from '@/lib/api/ai.api'
 import { documentApi } from '@/lib/api/document.api'
@@ -45,6 +44,10 @@ export function Step10Review() {
     setTimeout(() => void navigate('/dashboard'), 800)
   }
 
+  const handleImprove = (step: number) => {
+    void navigate(`?step=${step}`)
+  }
+
   const handleExportDone = () => {
     if (state.documentType === 'cv') {
       setTimeout(() => setShowCompanion(true), 800)
@@ -66,7 +69,7 @@ export function Step10Review() {
             <span className="text-sm text-muted-foreground">{t('builder.strengthChecking')}</span>
           </div>
         ) : state.strengthScore ? (
-          <StrengthScoreCard score={state.strengthScore} />
+          <StrengthScoreCard score={state.strengthScore} onImprove={handleImprove} />
         ) : null}
 
         {/* Export actions */}

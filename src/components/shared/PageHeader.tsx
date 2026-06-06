@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { ChevronLeft } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 interface Breadcrumb {
   label: string

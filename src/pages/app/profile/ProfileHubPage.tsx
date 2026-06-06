@@ -67,14 +67,14 @@ export function ProfileHubPage() {
             <Link
               key={key}
               to={path}
-              className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 hover:border-primary/40 hover:shadow-sm transition-all group min-h-[44px]"
+              className="flex items-center gap-3 bg-card border border-border rounded-xl px-4 py-3 hover:border-primary/40 hover:shadow-sm transition-all group min-h-11"
             >
               <Icon className="size-4 text-muted-foreground shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm">{t(`profile.${key}`)}</p>
                 {count > 0 ? (
                   <p className="text-xs text-muted-foreground">
-                    {t(count === 1 ? 'common.entry' : 'common.entries', { count })}
+                    {t((count as number) === 1 ? 'common.entry' : 'common.entries', { count })}
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground">{t('common.noEntries')}</p>

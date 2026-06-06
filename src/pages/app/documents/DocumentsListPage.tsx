@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Plus, Edit2, Copy, Trash2, FileText, FilePlus } from 'lucide-react'
+import { Plus, Edit2, Copy, Trash2, Download, FileText, FilePlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
@@ -29,6 +29,7 @@ function timeAgo(dateStr: string): string {
 }
 
 type FilterTab = 'all' | 'cv' | 'cover_letter'
+type SortKey = 'updated' | 'created' | 'name'
 
 export function DocumentsListPage() {
   const { t } = useTranslation()
@@ -37,6 +38,7 @@ export function DocumentsListPage() {
   const [docs, setDocs] = React.useState<DocDocument[]>([])
   const [loading, setLoading] = React.useState(true)
   const [filter, setFilter] = React.useState<FilterTab>('all')
+  const [sort, setSort] = React.useState<SortKey>('updated')
   const [deleteId, setDeleteId] = React.useState<string | null>(null)
   const [duplicatingId, setDuplicatingId] = React.useState<string | null>(null)
 
@@ -49,12 +51,19 @@ export function DocumentsListPage() {
 
   React.useEffect(() => { void load() }, [load])
 
-  const filtered = docs.filter((d) => {
-    if (filter === 'all') return true
-    if (filter === 'cv') return d.type === 'cv'
-    if (filter === 'cover_letter') return d.type === 'cover_letter'
-    return true
-  })
+  const filtered = React.useMemo(() => {
+    const list = docs.filter((d) => {
+      if (filter === 'all') return true
+      if (filter === 'cv') return d.type === 'cv'
+      if (filter === 'cover_letter') return d.type === 'cover_letter'
+      return true
+    })
+    return [...list].sort((a, b) => {
+      if (sort === 'name') return a.title.localeCompare(b.title)
+      if (sort === 'created') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    })
+  }, [docs, filter, sort])
 
   const handleDuplicate = async (id: string) => {
     setDuplicatingId(id)
@@ -95,18 +104,30 @@ export function DocumentsListPage() {
         </Button>
       </div>
 
-      {/* Filter tabs */}
-      <div className="flex gap-1 mb-6 border-b border-border">
-        {(['all', 'cv', 'cover_letter'] as FilterTab[]).map((tab) => (
-          <button
-            key={tab}
-            type="button"
-            onClick={() => setFilter(tab)}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${filter === tab ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
-          >
-            {tab === 'all' ? t('documents.all') : tab === 'cv' ? t('documents.cvs') : t('documents.coverLetters')}
-          </button>
-        ))}
+      {/* Filter tabs + sort */}
+      <div className="flex items-center justify-between mb-6 border-b border-border">
+        <div className="flex gap-1">
+          {(['all', 'cv', 'cover_letter'] as FilterTab[]).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setFilter(tab)}
+              className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${filter === tab ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
+            >
+              {tab === 'all' ? t('documents.all') : tab === 'cv' ? t('documents.cvs') : t('documents.coverLetters')}
+            </button>
+          ))}
+        </div>
+        <select
+          title={t('documents.sortBy')}
+          value={sort}
+          onChange={(e) => setSort(e.target.value as SortKey)}
+          className="mb-1 h-8 rounded-lg border border-input bg-background px-2 text-xs text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          <option value="updated">{t('documents.sortUpdated')}</option>
+          <option value="created">{t('documents.sortCreated')}</option>
+          <option value="name">{t('documents.sortName')}</option>
+        </select>
       </div>
 
       {/* Empty state */}
@@ -162,6 +183,14 @@ export function DocumentsListPage() {
                 </Button>
 
                 <div className="flex gap-1">
+                  <button
+                    type="button"
+                    title={t('documents.downloadPDF')}
+                    onClick={() => void navigate(`/builder/${doc.id}?step=10`)}
+                    className="size-8 rounded-lg border border-border flex items-center justify-center hover:bg-muted transition-colors"
+                  >
+                    <Download className="size-3.5 text-muted-foreground" />
+                  </button>
                   <button
                     type="button"
                     title={t('documents.duplicate')}

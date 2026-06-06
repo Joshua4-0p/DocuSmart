@@ -1,14 +1,11 @@
-import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useBuilderStore } from '@/store/builder.store'
 import { getProfileSnapshot } from '@/lib/api/profile.api'
-import { ToggleCard } from '@/components/builder/ToggleCard'
-import type { SectionKey } from '@/types/document'
 
 export function Step3Personal() {
   const { t } = useTranslation()
-  const { selectedSections, toggleSection, generatedContent, setGeneratedContent } = useBuilderStore()
+  const { generatedContent, setGeneratedContent } = useBuilderStore()
   const profile = getProfileSnapshot()
   const p = profile.personal
 
@@ -63,6 +60,7 @@ export function Step3Personal() {
             </div>
             <button
               type="button"
+              aria-label={t('builder.includePhoto')}
               onClick={() => setGeneratedContent('include-photo', includePhoto ? 'false' : 'true')}
               className={`relative inline-flex h-5 w-9 rounded-full transition-colors ${includePhoto ? 'bg-primary' : 'bg-muted'}`}
             >

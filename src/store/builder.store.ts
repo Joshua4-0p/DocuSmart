@@ -2,7 +2,6 @@ import { create } from 'zustand'
 import type {
   BuilderState,
   ContextParams,
-  DocumentType,
   JDMatchResult,
   StrengthScore,
   SectionKey,

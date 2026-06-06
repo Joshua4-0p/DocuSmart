@@ -42,7 +42,7 @@ export function RegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     setServerError('')
     try {
-      const res = await authApi.register(data)
+      const res = await authApi.register({ ...data, language: data.language ?? 'en' })
       setTokens(res.tokens.accessToken)
       setUser(res.user)
       void navigate('/dashboard', { replace: true })

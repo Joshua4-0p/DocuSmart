@@ -4,7 +4,6 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useBuilderStore } from '@/store/builder.store'
 import { getProfileSnapshot } from '@/lib/api/profile.api'
-import { ToggleCard } from '@/components/builder/ToggleCard'
 import type { SectionKey } from '@/types/document'
 
 const EXTRA_SECTIONS: { key: SectionKey; profileKey: keyof ReturnType<typeof getProfileSnapshot> }[] = [

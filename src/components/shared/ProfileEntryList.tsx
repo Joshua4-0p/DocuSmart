@@ -16,8 +16,8 @@ interface ProfileEntryListProps<T extends Entry> {
   sectionKey: string
   entries: T[]
   isLoading?: boolean
-  onAdd: (data: unknown) => Promise<void>
-  onEdit: (id: string, data: unknown) => Promise<void>
+  onAdd: (data: unknown) => Promise<unknown>
+  onEdit: (id: string, data: unknown) => Promise<unknown>
   onDelete: (id: string) => Promise<void>
   renderCard: (entry: T, onEdit: () => void, onDelete: () => void) => React.ReactNode
   renderForm: (defaultValues: Partial<T> | undefined, onSubmit: (d: unknown) => Promise<void>, onCancel: () => void) => React.ReactNode

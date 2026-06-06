@@ -102,12 +102,12 @@ export const referenceSchema = z.object({
   relationship: z.enum(['direct-manager', 'professor', 'colleague', 'client', 'other']),
 })
 
-export type PersonalDetailsFormValues = z.infer<typeof personalDetailsSchema>
-export type EducationFormValues = z.infer<typeof educationSchema>
-export type ExperienceFormValues = z.infer<typeof experienceSchema>
-export type CertificationFormValues = z.infer<typeof certificationSchema>
-export type ProjectFormValues = z.infer<typeof projectSchema>
-export type VolunteerFormValues = z.infer<typeof volunteerSchema>
-export type PublicationFormValues = z.infer<typeof publicationSchema>
-export type LanguageFormValues = z.infer<typeof languageSchema>
-export type ReferenceFormValues = z.infer<typeof referenceSchema>
+export type PersonalDetailsFormValues = z.input<typeof personalDetailsSchema>
+export type EducationFormValues = z.input<typeof educationSchema>
+export type ExperienceFormValues = z.input<typeof experienceSchema>
+export type CertificationFormValues = z.input<typeof certificationSchema>
+export type ProjectFormValues = z.input<typeof projectSchema>
+export type VolunteerFormValues = z.input<typeof volunteerSchema>
+export type PublicationFormValues = z.input<typeof publicationSchema>
+export type LanguageFormValues = z.input<typeof languageSchema>
+export type ReferenceFormValues = z.input<typeof referenceSchema>
