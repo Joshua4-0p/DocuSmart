@@ -72,6 +72,14 @@
     --radius-4xl:  calc(var(--radius) * 2.6);
 }
 
+@layer utilities {
+  /* Builder preview panel — zoom is set via --ds-zoom CSS custom property */
+  .preview-page-wrap {
+    zoom: var(--ds-zoom, 1);
+    width: 794px;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

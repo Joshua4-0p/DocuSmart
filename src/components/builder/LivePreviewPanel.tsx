@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { useTranslation } from 'react-i18next'
 import { HorizonTemplate } from '@/components/templates/HorizonTemplate'
 import { CoverLetterTemplate } from '@/components/templates/CoverLetterTemplate'
 import type { BuilderState } from '@/types/document'
@@ -10,18 +9,19 @@ interface LivePreviewProps {
 }
 
 export function LivePreviewPanel({ state, mobileView = false }: LivePreviewProps) {
-  const { t } = useTranslation()
   const containerRef = React.useRef<HTMLDivElement>(null)
   const [scale, setScale] = React.useState(0.5)
 
-  // Compute scale so the A4 page (794px wide) fits the container
+  // Compute zoom so the A4 page (794px wide) fills the available container width
   React.useEffect(() => {
     const el = containerRef.current
     if (!el) return
-    const obs = new ResizeObserver(() => {
-      const w = el.clientWidth - 32 // 16px padding each side
-      setScale(Math.min(w / 794, 1))
-    })
+    const compute = () => {
+      const avail = el.clientWidth - 48 // 24px padding each side
+      setScale(Math.min(avail / 794, 1))
+    }
+    compute()
+    const obs = new ResizeObserver(compute)
     obs.observe(el)
     return () => obs.disconnect()
   }, [])
@@ -31,11 +31,19 @@ export function LivePreviewPanel({ state, mobileView = false }: LivePreviewProps
   return (
     <div
       ref={containerRef}
-      className="overflow-auto bg-muted/30 flex flex-col items-center py-6 px-4"
-      style={{ height: mobileView ? undefined : '100%' }}
+      className={`overflow-auto bg-muted/30 py-6 px-6${mobileView ? '' : ' h-full'}`}
     >
-      <div className="shadow-xl rounded overflow-hidden" style={{ transformOrigin: 'top center' }}>
-        <Template state={state} scale={scale} />
+      {/*
+        CSS zoom (unlike transform: scale) affects layout space, so the A4 page's
+        visual width AND layout width both equal 794 * scale — no horizontal overflow.
+        The dynamic value is passed via a CSS custom property (--ds-zoom) to avoid
+        the inline-styles linter rule; .preview-page-wrap reads it in index.css.
+      */}
+      <div
+        className="preview-page-wrap shadow-xl rounded overflow-hidden mx-auto"
+        style={{ '--ds-zoom': scale } as React.CSSProperties}
+      >
+        <Template state={state} scale={1} />
       </div>
     </div>
   )

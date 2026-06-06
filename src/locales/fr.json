@@ -386,6 +386,7 @@
     "exportSuccess": "Votre document est prêt !",
     "exportError": "L'export a échoué. Veuillez réessayer.",
     "saveToDocuments": "Enregistrer dans Mes documents",
+    "saveAndExit": "Sauvegarder et aller au tableau de bord",
     "savedToDocuments": "Enregistré ✓",
     "companionTitle": "Votre CV est prêt !",
     "companionDesc": "Voulez-vous créer une lettre de motivation assortie pour cette candidature ?",

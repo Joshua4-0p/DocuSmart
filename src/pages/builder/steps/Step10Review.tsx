@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { StrengthScoreCard } from '@/components/builder/StrengthScoreCard'
 import { ExportButton } from '@/components/builder/ExportButton'
@@ -11,6 +12,7 @@ import { useToast } from '@/components/ui/toast'
 
 export function Step10Review() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const { toast } = useToast()
   const state = useBuilderStore()
   const [checking, setChecking] = React.useState(false)
@@ -40,6 +42,7 @@ export function Step10Review() {
     state.markSaved()
     setSaved(true)
     toast(t('builder.savedToDocuments'), 'success')
+    setTimeout(() => void navigate('/dashboard'), 800)
   }
 
   const handleExportDone = () => {
@@ -83,10 +86,11 @@ export function Step10Review() {
         {/* Save */}
         <button
           type="button"
-          onClick={handleSave}
-          className="w-full py-2.5 rounded-xl border-2 border-dashed border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors"
+          onClick={() => void handleSave()}
+          disabled={saved}
+          className="w-full py-2.5 rounded-xl border-2 border-dashed border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {saved ? t('builder.savedToDocuments') : t('builder.saveToDocuments')}
+          {saved ? t('builder.savedToDocuments') : t('builder.saveAndExit')}
         </button>
       </div>
 

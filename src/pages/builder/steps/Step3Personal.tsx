@@ -64,7 +64,7 @@ export function Step3Personal() {
             <button
               type="button"
               onClick={() => setGeneratedContent('include-photo', includePhoto ? 'false' : 'true')}
-              className={`relative inline-flex h-5 w-9 rounded-full transition-colors ${includePhoto && p.avatarUrl ? 'bg-primary' : 'bg-muted'}`}
+              className={`relative inline-flex h-5 w-9 rounded-full transition-colors ${includePhoto ? 'bg-primary' : 'bg-muted'}`}
             >
               <span className={`inline-block size-4 rounded-full bg-white shadow transition-transform mt-0.5 ${includePhoto ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </button>

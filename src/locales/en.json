@@ -386,6 +386,7 @@
     "exportSuccess": "Your document is ready!",
     "exportError": "Export failed. Please try again.",
     "saveToDocuments": "Save to My Documents",
+    "saveAndExit": "Save & Go to Dashboard",
     "savedToDocuments": "Saved ✓",
     "companionTitle": "Your CV is ready!",
     "companionDesc": "Want to create a matching Cover Letter for this application?",

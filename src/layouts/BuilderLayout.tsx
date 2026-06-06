@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Link, useNavigate, useBlocker } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { X, ArrowLeft, Pencil, Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useBuilderStore } from '@/store/builder.store'
@@ -17,17 +17,16 @@ export function BuilderLayout({ children, onStepClick }: BuilderLayoutProps) {
   const [editingTitle, setEditingTitle] = React.useState(false)
   const [titleValue, setTitleValue] = React.useState('')
 
-  const blocker = useBlocker(state.hasUnsavedChanges)
-
+  // Warn on browser close / refresh when there are unsaved changes
   React.useEffect(() => {
-    if (blocker.state === 'blocked') {
-      if (window.confirm(t('builder.unsavedChanges'))) {
-        blocker.proceed()
-      } else {
-        blocker.reset()
+    const handler = (e: BeforeUnloadEvent) => {
+      if (state.hasUnsavedChanges) {
+        e.preventDefault()
       }
     }
-  }, [blocker, t])
+    window.addEventListener('beforeunload', handler)
+    return () => window.removeEventListener('beforeunload', handler)
+  }, [state.hasUnsavedChanges])
 
   const startEditTitle = () => {
     setTitleValue(state.context.jobTitle || '')
