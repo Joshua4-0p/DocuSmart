@@ -1,0 +1,209 @@
+/*
+ * DocuSmart — Design Tokens
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Light mode  →  Option A "Ink & Ivory"   (crisp, editorial, premium)
+ * Dark mode   →  Option B "Midnight & Slate" (warm darks, same blue CTA)
+ *
+ * Architecture
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Layer 1 — Raw scale:  named CSS vars   (--ds-blue-400, --ds-stone-200 …)
+ * Layer 2 — Semantic:   role-based vars  (--ds-ai, --ds-premium …)
+ * Layer 3 — shadcn:     component vars   (--background, --primary …)
+ *
+ * Tailwind v4 maps --color-* utilities to the shadcn vars via @theme inline
+ * in index.css. Custom semantic tokens (--color-ds-ai etc.) are also added
+ * there so `bg-ds-ai`, `text-ds-ai-foreground` etc. work as Tailwind classes.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LAYER 1 — Raw color scale (invariant, not mode-aware)
+   ══════════════════════════════════════════════════════════════════════════════ */
+:root {
+
+  /* ── Neutral / warm stone ── */
+  --ds-white:      #FFFFFF;
+  --ds-stone-50:   #F8F8F6;   /* off-white — page background */
+  --ds-stone-100:  #F1EFE8;   /* warm tint — muted surfaces, ghost buttons */
+  --ds-stone-200:  #D3D1C7;   /* warm gray — borders, dividers */
+  --ds-stone-400:  #888780;   /* mid gray  — placeholder / helper text */
+  --ds-stone-600:  #5F5E5A;   /* dark gray — dark-mode borders */
+  --ds-stone-700:  #444441;   /* dark surface — elevated cards in dark mode */
+  --ds-stone-800:  #2C2C2A;   /* charcoal  — body text (light) / card bg (dark) */
+  --ds-stone-900:  #1A1A1A;   /* near-black — headlines, nav bg (light) */
+
+  /* ── Blue — brand / CTA ── */
+  --ds-blue-50:    #E6F1FB;   /* tint — badge backgrounds, info highlights */
+  --ds-blue-200:   #85B7EB;   /* light — hover accent, decorative */
+  --ds-blue-400:   #378ADD;   /* CTA — primary buttons (light mode) */
+  --ds-blue-500:   #5B9FE0;   /* CTA — primary buttons (dark mode, brighter) */
+  --ds-blue-600:   #185FA5;   /* pressed / active state */
+  --ds-blue-800:   #0C447C;   /* badge text on blue-50 bg */
+  --ds-blue-900:   #042C53;   /* deep accent — dark-mode hover overlay */
+
+  /* ── Teal — AI features / success ── */
+  --ds-teal-50:    #E1F5EE;   /* bg chip (light) */
+  --ds-teal-500:   #5DCAA5;   /* icon / text (dark), success indicator */
+  --ds-teal-900:   #085041;   /* text on teal-50 (light) */
+  --ds-teal-950:   #04342C;   /* bg chip (dark) */
+
+  /* ── Amber — premium / paid tier ── */
+  --ds-amber-50:   #FAEEDA;   /* bg chip (light) */
+  --ds-amber-400:  #F59E0B;   /* icon / badge (dark) */
+  --ds-amber-900:  #633806;   /* text on amber-50 (light) */
+  --ds-amber-950:  #451A03;   /* bg chip (dark) */
+
+  /* ── Coral/Red — warnings / destructive ── */
+  --ds-coral-50:   #FAECE7;   /* bg chip (light) — soft warnings, missing fields */
+  --ds-coral-900:  #712B13;   /* text on coral-50 (light) */
+  --ds-red-500:    #DC2626;   /* destructive actions (light) */
+  --ds-red-400:    #EF4444;   /* destructive actions (dark) */
+  --ds-red-50:     #FEE2E2;   /* error surface (light) */
+  --ds-red-950:    #450A0A;   /* error surface (dark) */
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LAYER 2 — Semantic tokens (mode-aware)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Light mode */
+:root {
+  --ds-ai:                  var(--ds-teal-50);
+  --ds-ai-foreground:       var(--ds-teal-900);
+  --ds-premium:             var(--ds-amber-50);
+  --ds-premium-foreground:  var(--ds-amber-900);
+  --ds-success:             var(--ds-teal-50);
+  --ds-success-foreground:  var(--ds-teal-900);
+  --ds-warning:             var(--ds-coral-50);
+  --ds-warning-foreground:  var(--ds-coral-900);
+  --ds-error:               var(--ds-red-50);
+  --ds-error-foreground:    var(--ds-red-500);
+}
+
+/* Dark mode */
+.dark {
+  --ds-ai:                  var(--ds-teal-950);
+  --ds-ai-foreground:       var(--ds-teal-500);
+  --ds-premium:             var(--ds-amber-950);
+  --ds-premium-foreground:  var(--ds-amber-400);
+  --ds-success:             var(--ds-teal-950);
+  --ds-success-foreground:  var(--ds-teal-500);
+  --ds-warning:             var(--ds-amber-950);
+  --ds-warning-foreground:  var(--ds-amber-400);
+  --ds-error:               var(--ds-red-950);
+  --ds-error-foreground:    var(--ds-red-400);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LAYER 3 — shadcn component tokens (consumed by Radix/shadcn components)
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Light mode (Option A — Ink & Ivory) ── */
+:root {
+  /* Surfaces */
+  --background:              var(--ds-stone-50);   /* #F8F8F6 — warm off-white page */
+  --foreground:              var(--ds-stone-900);   /* #1A1A1A — near-black headlines */
+  --card:                    var(--ds-white);        /* #FFFFFF — card surfaces float above bg */
+  --card-foreground:         var(--ds-stone-800);   /* #2C2C2A — body text on cards */
+  --popover:                 var(--ds-white);
+  --popover-foreground:      var(--ds-stone-900);
+
+  /* Primary CTA — blue */
+  --primary:                 var(--ds-blue-400);    /* #378ADD */
+  --primary-foreground:      var(--ds-white);
+
+  /* Secondary — near-black filled button */
+  --secondary:               var(--ds-stone-900);   /* #1A1A1A */
+  --secondary-foreground:    var(--ds-white);
+
+  /* Muted — ghost / disabled states */
+  --muted:                   var(--ds-stone-100);   /* #F1EFE8 */
+  --muted-foreground:        var(--ds-stone-400);   /* #888780 */
+
+  /* Accent — hover highlight (blue tint) */
+  --accent:                  var(--ds-blue-50);     /* #E6F1FB */
+  --accent-foreground:       var(--ds-blue-600);    /* #185FA5 */
+
+  /* Status */
+  --destructive:             var(--ds-red-500);     /* #DC2626 */
+  --destructive-foreground:  var(--ds-white);
+
+  /* Structure */
+  --border:                  var(--ds-stone-200);   /* #D3D1C7 */
+  --input:                   var(--ds-stone-200);   /* input borders */
+  --ring:                    var(--ds-blue-400);    /* focus ring */
+  --radius:                  0.5rem;
+
+  /* Charts */
+  --chart-1:                 var(--ds-blue-400);
+  --chart-2:                 var(--ds-teal-500);
+  --chart-3:                 var(--ds-amber-400);
+  --chart-4:                 var(--ds-red-500);
+  --chart-5:                 var(--ds-stone-400);
+
+  /* Sidebar */
+  --sidebar:                         var(--ds-white);
+  --sidebar-foreground:              var(--ds-stone-900);
+  --sidebar-primary:                 var(--ds-blue-400);
+  --sidebar-primary-foreground:      var(--ds-white);
+  --sidebar-accent:                  var(--ds-stone-100);
+  --sidebar-accent-foreground:       var(--ds-stone-800);
+  --sidebar-border:                  var(--ds-stone-200);
+  --sidebar-ring:                    var(--ds-blue-400);
+}
+
+
+/* ── Dark mode (Option B — Midnight & Slate, blue CTA preserved) ── */
+.dark {
+  /* Surfaces */
+  --background:              var(--ds-stone-900);   /* #1A1A1A — deepest layer */
+  --foreground:              var(--ds-stone-50);    /* #F8F8F6 — warm white text */
+  --card:                    var(--ds-stone-800);   /* #2C2C2A — card surfaces */
+  --card-foreground:         var(--ds-stone-100);   /* #F1EFE8 */
+  --popover:                 var(--ds-stone-800);
+  --popover-foreground:      var(--ds-stone-50);
+
+  /* Primary CTA — brighter blue for dark background contrast */
+  --primary:                 var(--ds-blue-500);    /* #5B9FE0 — passes WCAG AA on dark */
+  --primary-foreground:      var(--ds-white);
+
+  /* Secondary — elevated surface button */
+  --secondary:               var(--ds-stone-700);   /* #444441 */
+  --secondary-foreground:    var(--ds-stone-100);   /* #F1EFE8 */
+
+  /* Muted */
+  --muted:                   var(--ds-stone-700);   /* #444441 */
+  --muted-foreground:        var(--ds-stone-400);   /* #888780 */
+
+  /* Accent — deep blue for hover on dark */
+  --accent:                  var(--ds-blue-900);    /* #042C53 */
+  --accent-foreground:       var(--ds-blue-200);    /* #85B7EB */
+
+  /* Status */
+  --destructive:             var(--ds-red-400);     /* #EF4444 */
+  --destructive-foreground:  var(--ds-white);
+
+  /* Structure */
+  --border:                  var(--ds-stone-600);   /* #5F5E5A */
+  --input:                   var(--ds-stone-600);
+  --ring:                    var(--ds-blue-500);    /* #5B9FE0 */
+
+  /* Charts */
+  --chart-1:                 var(--ds-blue-500);
+  --chart-2:                 var(--ds-teal-500);
+  --chart-3:                 var(--ds-amber-400);
+  --chart-4:                 var(--ds-red-400);
+  --chart-5:                 var(--ds-stone-400);
+
+  /* Sidebar — one step deeper than card for visible separation */
+  --sidebar:                         var(--ds-stone-900);
+  --sidebar-foreground:              var(--ds-stone-100);
+  --sidebar-primary:                 var(--ds-blue-500);
+  --sidebar-primary-foreground:      var(--ds-white);
+  --sidebar-accent:                  var(--ds-stone-700);
+  --sidebar-accent-foreground:       var(--ds-stone-100);
+  --sidebar-border:                  var(--ds-stone-600);
+  --sidebar-ring:                    var(--ds-blue-500);
+}

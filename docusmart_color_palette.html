@@ -1,0 +1,280 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{padding:1rem 0;display:flex;flex-direction:column;gap:2rem}
+.sec{display:flex;flex-direction:column;gap:.75rem}
+.sec-label{font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary)}
+.palette-row{display:flex;gap:8px}
+.swatch-group{display:flex;flex-direction:column;gap:4px;flex:1}
+.swatch{height:48px;border-radius:var(--border-radius-md);width:100%}
+.swatch.sm{height:28px;border-radius:4px}
+.swatch-label{font-size:11px;color:var(--color-text-secondary);text-align:center}
+.palette-label{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.hex{font-size:11px;color:var(--color-text-tertiary);font-family:var(--font-mono)}
+
+.option-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.option-card{border:.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;cursor:pointer}
+.option-card.recommended{border:2px solid #378ADD}
+.option-header{padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.option-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.option-vibe{font-size:11px;color:var(--color-text-tertiary)}
+.rec-badge{display:inline-block;background:#E6F1FB;color:#185FA5;font-size:10px;font-weight:500;padding:2px 8px;border-radius:var(--border-radius-md);margin-bottom:4px}
+
+.mini-ui{height:180px;padding:10px;display:flex;flex-direction:column;gap:6px;position:relative}
+.mini-nav{height:24px;border-radius:4px;display:flex;align-items:center;padding:0 8px;gap:6px}
+.mini-nav-dot{height:5px;border-radius:2px}
+.mini-card{border-radius:6px;padding:8px;display:flex;flex-direction:column;gap:4px}
+.mini-line{height:5px;border-radius:2px}
+.mini-btn{height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center}
+.mini-btn-text{height:4px;border-radius:2px}
+.mini-badge{height:12px;border-radius:2px;width:40%}
+
+.rationale-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rationale-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.rc-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px}
+.rc-body{font-size:12px;color:var(--color-text-secondary);line-height:1.5}
+
+.usage-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.usage-item{display:flex;flex-direction:column;gap:4px;align-items:center}
+.usage-chip{height:36px;border-radius:var(--border-radius-md);width:100%;display:flex;align-items:center;justify-content:center}
+.usage-chip-label{font-size:11px;font-weight:500}
+.usage-label{font-size:11px;color:var(--color-text-secondary);text-align:center}
+
+.token-row{display:flex;gap:6px;flex-wrap:wrap}
+.token{padding:6px 12px;border-radius:100px;font-size:12px;font-weight:500;white-space:nowrap}
+</style>
+
+<div class="root">
+<h2 class="sr-only">DocuSmart colour palette options — three options with UI previews and a recommendation</h2>
+
+<div class="sec">
+  <div class="sec-label">Three palette options for DocuSmart</div>
+  <div class="option-grid">
+
+    <div class="option-card recommended">
+      <div class="option-header">
+        <span class="rec-badge">Recommended</span>
+        <div class="option-name">Option A — Ink & Ivory</div>
+        <div class="option-vibe">Crisp · editorial · premium</div>
+      </div>
+      <div class="mini-ui" style="background:#F8F8F6">
+        <div class="mini-nav" style="background:#1A1A1A">
+          <div class="mini-nav-dot" style="background:#FFFFFF;width:32px"></div>
+          <div class="mini-nav-dot" style="background:rgba(255,255,255,0.3);width:20px;margin-left:auto"></div>
+          <div class="mini-nav-dot" style="background:rgba(255,255,255,0.3);width:20px"></div>
+          <div style="height:16px;width:44px;border-radius:3px;background:#378ADD;margin-left:6px;display:flex;align-items:center;justify-content:center"><div style="height:4px;width:28px;border-radius:2px;background:#FFFFFF"></div></div>
+        </div>
+        <div class="mini-card" style="background:#FFFFFF;border:.5px solid #D3D1C7;flex:1">
+          <div class="mini-line" style="background:#1A1A1A;width:55%"></div>
+          <div class="mini-line" style="background:#888780;width:80%"></div>
+          <div class="mini-line" style="background:#888780;width:70%"></div>
+          <div style="display:flex;gap:6px;margin-top:4px">
+            <div class="mini-btn" style="background:#1A1A1A;flex:1"><div class="mini-btn-text" style="background:#fff;width:60%"></div></div>
+            <div class="mini-btn" style="background:#378ADD;flex:1"><div class="mini-btn-text" style="background:#fff;width:60%"></div></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <div class="mini-badge" style="background:#E6F1FB;width:30%"></div>
+          <div class="mini-badge" style="background:#D3D1C7;width:25%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="option-card">
+      <div class="option-header">
+        <div class="option-name">Option B — Midnight & Slate</div>
+        <div class="option-vibe">Bold · dark · sophisticated</div>
+      </div>
+      <div class="mini-ui" style="background:#2C2C2A">
+        <div class="mini-nav" style="background:#1A1A1A">
+          <div class="mini-nav-dot" style="background:#FFFFFF;width:32px"></div>
+          <div class="mini-nav-dot" style="background:rgba(255,255,255,0.25);width:20px;margin-left:auto"></div>
+          <div class="mini-nav-dot" style="background:rgba(255,255,255,0.25);width:20px"></div>
+          <div style="height:16px;width:44px;border-radius:3px;background:#5DCAA5;margin-left:6px;display:flex;align-items:center;justify-content:center"><div style="height:4px;width:28px;border-radius:2px;background:#04342C"></div></div>
+        </div>
+        <div class="mini-card" style="background:#444441;border:.5px solid #5F5E5A;flex:1">
+          <div class="mini-line" style="background:#F1EFE8;width:55%"></div>
+          <div class="mini-line" style="background:#888780;width:80%"></div>
+          <div class="mini-line" style="background:#888780;width:70%"></div>
+          <div style="display:flex;gap:6px;margin-top:4px">
+            <div class="mini-btn" style="background:#FFFFFF;flex:1"><div class="mini-btn-text" style="background:#1A1A1A;width:60%"></div></div>
+            <div class="mini-btn" style="background:#5DCAA5;flex:1"><div class="mini-btn-text" style="background:#04342C;width:60%"></div></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <div class="mini-badge" style="background:#04342C;width:30%"></div>
+          <div class="mini-badge" style="background:#5F5E5A;width:25%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="option-card">
+      <div class="option-header">
+        <div class="option-name">Option C — Ivory & Indigo</div>
+        <div class="option-vibe">Warm · modern · friendly</div>
+      </div>
+      <div class="mini-ui" style="background:#F8F8F6">
+        <div class="mini-nav" style="background:#FFFFFF;border-bottom:.5px solid #D3D1C7">
+          <div class="mini-nav-dot" style="background:#1A1A1A;width:32px"></div>
+          <div class="mini-nav-dot" style="background:#D3D1C7;width:20px;margin-left:auto"></div>
+          <div class="mini-nav-dot" style="background:#D3D1C7;width:20px"></div>
+          <div style="height:16px;width:44px;border-radius:3px;background:#7F77DD;margin-left:6px;display:flex;align-items:center;justify-content:center"><div style="height:4px;width:28px;border-radius:2px;background:#EEEDFE"></div></div>
+        </div>
+        <div class="mini-card" style="background:#FFFFFF;border:.5px solid #D3D1C7;flex:1">
+          <div class="mini-line" style="background:#1A1A1A;width:55%"></div>
+          <div class="mini-line" style="background:#888780;width:80%"></div>
+          <div class="mini-line" style="background:#888780;width:70%"></div>
+          <div style="display:flex;gap:6px;margin-top:4px">
+            <div class="mini-btn" style="background:#F1EFE8;border:.5px solid #D3D1C7;flex:1"><div class="mini-btn-text" style="background:#5F5E5A;width:60%"></div></div>
+            <div class="mini-btn" style="background:#7F77DD;flex:1"><div class="mini-btn-text" style="background:#EEEDFE;width:60%"></div></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <div class="mini-badge" style="background:#EEEDFE;width:30%"></div>
+          <div class="mini-badge" style="background:#D3D1C7;width:25%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Recommended — Option A full palette breakdown</div>
+  <div class="palette-row">
+    <div class="swatch-group">
+      <div class="swatch" style="background:#FFFFFF;border:.5px solid #D3D1C7"></div>
+      <div class="swatch-label">White<br><span class="hex">#FFFFFF</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Primary BG</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#F8F8F6"></div>
+      <div class="swatch-label">Off-white<br><span class="hex">#F8F8F6</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Page BG</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#D3D1C7"></div>
+      <div class="swatch-label">Warm gray<br><span class="hex">#D3D1C7</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Borders</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#888780"></div>
+      <div class="swatch-label">Mid gray<br><span class="hex">#888780</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Muted text</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#2C2C2A"></div>
+      <div class="swatch-label">Charcoal<br><span class="hex">#2C2C2A</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Body text</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#1A1A1A"></div>
+      <div class="swatch-label">Near-black<br><span class="hex">#1A1A1A</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Headlines</div>
+    </div>
+  </div>
+
+  <div class="palette-row" style="margin-top:4px">
+    <div class="swatch-group">
+      <div class="swatch" style="background:#E6F1FB"></div>
+      <div class="swatch-label">Blue 50<br><span class="hex">#E6F1FB</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Tint / badge BG</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#85B7EB"></div>
+      <div class="swatch-label">Blue 200<br><span class="hex">#85B7EB</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Hover accent</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#378ADD"></div>
+      <div class="swatch-label">Blue 400<br><span class="hex">#378ADD</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">CTA / links</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#185FA5"></div>
+      <div class="swatch-label">Blue 600<br><span class="hex">#185FA5</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Pressed state</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#0C447C"></div>
+      <div class="swatch-label">Blue 800<br><span class="hex">#0C447C</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Badge text</div>
+    </div>
+    <div class="swatch-group">
+      <div class="swatch" style="background:#042C53"></div>
+      <div class="swatch-label">Blue 900<br><span class="hex">#042C53</span></div>
+      <div class="palette-label" style="text-align:center;font-size:11px;color:var(--color-text-tertiary)">Deep accent</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Semantic / functional colors</div>
+  <div class="usage-row">
+    <div class="usage-item">
+      <div class="usage-chip" style="background:#E1F5EE">
+        <span class="usage-chip-label" style="color:#085041">AI generated</span>
+      </div>
+      <div class="usage-label">Teal — AI features<br>& success states</div>
+    </div>
+    <div class="usage-item">
+      <div class="usage-chip" style="background:#FAEEDA">
+        <span class="usage-chip-label" style="color:#633806">Paid plan</span>
+      </div>
+      <div class="usage-label">Amber — premium<br>& paid tier labels</div>
+    </div>
+    <div class="usage-item">
+      <div class="usage-chip" style="background:#FAECE7">
+        <span class="usage-chip-label" style="color:#712B13">Incomplete</span>
+      </div>
+      <div class="usage-label">Coral — warnings<br>& missing fields</div>
+    </div>
+    <div class="usage-item">
+      <div class="usage-chip" style="background:#F1EFE8">
+        <span class="usage-chip-label" style="color:#444441">Free tier</span>
+      </div>
+      <div class="usage-label">Gray — neutral tags<br>& free tier badges</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Why not pure black & pure white?</div>
+  <div class="rationale-grid">
+    <div class="rationale-card">
+      <div class="rc-title">Off-white page background</div>
+      <div class="rc-body">Pure white (#FFFFFF) on a pure white page makes cards invisible — there's nothing to distinguish surfaces. A warm off-white (#F8F8F6) gives the page depth while keeping the "clean" feel. Cards sit on top in true white, creating a natural hierarchy without shadows.</div>
+    </div>
+    <div class="rationale-card">
+      <div class="rc-title">Charcoal instead of pure black</div>
+      <div class="rc-body">Pure black (#000000) text on white creates harsh contrast that feels cheap and tiring to read. A near-black charcoal (#1A1A1A for headlines, #2C2C2A for body) reads as luxurious and editorial — it's how premium brands like Linear, Notion, and Apple style their type.</div>
+    </div>
+    <div class="rationale-card">
+      <div class="rc-title">Why blue works as the accent</div>
+      <div class="rc-body">Your instinct on blue is correct. Blue (#378ADD) is the strongest choice for DocuSmart because it signals trust, professionalism, and technology — exactly what a career platform needs. It also has the best contrast ratio on white for CTAs and passes WCAG AA accessibility on all text sizes.</div>
+    </div>
+    <div class="rationale-card">
+      <div class="rc-title">Why not purple as tertiary?</div>
+      <div class="rc-body">Purple would work but it reads more "creative/playful" — great for a design tool, slightly off for a career platform targeting Cameroonian employers and scholarship committees. Blue keeps DocuSmart in the same visual language as LinkedIn, Workday, and global career platforms users already trust.</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sec-label">Where each colour is used in the UI</div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px">
+    <span class="token" style="background:#1A1A1A;color:#F8F8F6">Headlines & logo</span>
+    <span class="token" style="background:#F8F8F6;color:#2C2C2A;border:.5px solid #D3D1C7">Page background</span>
+    <span class="token" style="background:#FFFFFF;color:#2C2C2A;border:.5px solid #D3D1C7">Card surfaces</span>
+    <span class="token" style="background:#378ADD;color:#FFFFFF">Primary CTA buttons</span>
+    <span class="token" style="background:#1A1A1A;color:#FFFFFF">Secondary buttons</span>
+    <span class="token" style="background:#E6F1FB;color:#0C447C">Info badges / links</span>
+    <span class="token" style="background:#E1F5EE;color:#085041">AI feature labels</span>
+    <span class="token" style="background:#FAEEDA;color:#633806">Paid plan badges</span>
+    <span class="token" style="background:#FAECE7;color:#712B13">Warnings / gaps</span>
+    <span class="token" style="background:#D3D1C7;color:#444441">Borders & dividers</span>
+    <span class="token" style="background:#888780;color:#FFFFFF">Muted / helper text</span>
+    <span class="token" style="background:#185FA5;color:#FFFFFF">Button hover / active</span>
+  </div>
+</div>
+
+</div>
