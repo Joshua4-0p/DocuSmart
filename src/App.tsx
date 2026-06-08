@@ -25,6 +25,8 @@ import { NotFoundPage } from '@/pages/NotFoundPage'
 import { DocumentsListPage } from '@/pages/app/documents/DocumentsListPage'
 import { NewDocumentPage } from '@/pages/app/documents/NewDocumentPage'
 import { BuilderPage } from '@/pages/builder/BuilderPage'
+import TemplateGalleryPage from '@/pages/app/TemplateGalleryPage'
+import TemplateDetailPage from '@/pages/app/TemplateDetailPage'
 
 export function App() {
   return (
@@ -66,6 +68,8 @@ export function App() {
             <Route path="profile/languages" element={<LanguagesPage />} />
             <Route path="profile/references" element={<ReferencesPage />} />
             <Route path="settings" element={<SettingsPage />} />
+            <Route path="templates" element={<TemplateGalleryPage />} />
+            <Route path="templates/:slug" element={<TemplateDetailPage />} />
             <Route path="app" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Route>

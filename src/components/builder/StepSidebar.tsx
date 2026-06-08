@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { calcCompletenessData, useBuilderStore } from '@/store/builder.store'
 import { CompletenessRing } from '@/components/builder/CompletenessRing'
 import { SectionOrderPanel } from '@/components/builder/SectionOrderPanel'
+import { CustomisationPanel } from '@/components/builder/CustomisationPanel'
 import type { BuilderState } from '@/types/document'
 
 const STEPS = [
@@ -78,6 +79,9 @@ export function StepSidebar({
         sections={state.sectionOrder}
         onChange={reorderSections}
       />
+
+      {/* Template customisation */}
+      <CustomisationPanel />
     </aside>
   )
 }

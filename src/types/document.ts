@@ -58,6 +58,9 @@ export interface DocDocument {
   context: ContextParams
   language: 'en' | 'fr'
   templateId: string
+  accentColor?: string
+  fontPairing?: string
+  spacing?: 'compact' | 'normal' | 'spacious'
   step: number
   selectedSections: string[]
   sectionOrder: string[]
@@ -77,6 +80,9 @@ export interface BuilderState {
   sectionOrder: string[]
   generatedContent: Record<string, string>
   templateId: string
+  accentColor: string
+  fontPairing: string
+  spacing: 'compact' | 'normal' | 'spacious'
   language: 'en' | 'fr'
   jdMatchResult?: JDMatchResult
   strengthScore?: StrengthScore

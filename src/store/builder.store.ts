@@ -28,6 +28,7 @@ interface BuilderStore extends BuilderState {
   clearGeneratedContent: () => void
   setJDMatchResult: (result: JDMatchResult) => void
   setStrengthScore: (score: StrengthScore) => void
+  setTemplateSettings: (settings: Partial<{ templateId: string; accentColor: string; fontPairing: string; spacing: 'compact' | 'normal' | 'spacious' }>) => void
   markSaved: () => void
   resetBuilder: () => void
   persistDraft: () => void
@@ -49,6 +50,9 @@ const EMPTY_STATE: BuilderState = {
   sectionOrder: [...DEFAULT_SECTION_ORDER],
   generatedContent: {},
   templateId: 'horizon',
+  accentColor: 'navy',
+  fontPairing: 'modern-sans',
+  spacing: 'normal',
   language: 'en',
   hasUnsavedChanges: false,
 }
@@ -67,6 +71,9 @@ export const useBuilderStore = create<BuilderStore>()((set, get) => ({
       sectionOrder: doc.sectionOrder ?? [...DEFAULT_SECTION_ORDER],
       generatedContent: doc.generatedContent ?? {},
       templateId: doc.templateId ?? 'horizon',
+      accentColor: doc.accentColor ?? 'navy',
+      fontPairing: doc.fontPairing ?? 'modern-sans',
+      spacing: doc.spacing ?? 'normal',
       language: doc.language ?? 'en',
       jdMatchResult: doc.jdMatchResult,
       strengthScore: doc.strengthScore,
@@ -126,6 +133,11 @@ export const useBuilderStore = create<BuilderStore>()((set, get) => ({
     get().persistDraft()
   },
 
+  setTemplateSettings: (settings) => {
+    set({ ...settings, hasUnsavedChanges: true })
+    get().persistDraft()
+  },
+
   markSaved: () => set({ hasUnsavedChanges: false }),
 
   resetBuilder: () => set(EMPTY_STATE),
@@ -141,6 +153,9 @@ export const useBuilderStore = create<BuilderStore>()((set, get) => ({
       sectionOrder: state.sectionOrder,
       generatedContent: state.generatedContent,
       templateId: state.templateId,
+      accentColor: state.accentColor,
+      fontPairing: state.fontPairing,
+      spacing: state.spacing,
       language: state.language,
       jdMatchResult: state.jdMatchResult,
       strengthScore: state.strengthScore,
@@ -152,6 +167,10 @@ export const useBuilderStore = create<BuilderStore>()((set, get) => ({
       selectedSections: state.selectedSections,
       sectionOrder: state.sectionOrder,
       generatedContent: state.generatedContent,
+      templateId: state.templateId,
+      accentColor: state.accentColor,
+      fontPairing: state.fontPairing,
+      spacing: state.spacing,
       language: state.language,
       jdMatchResult: state.jdMatchResult,
       strengthScore: state.strengthScore,

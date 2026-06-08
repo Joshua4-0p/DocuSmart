@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useBuilderStore } from '@/store/builder.store'
 import { getProfileSnapshot } from '@/lib/api/profile.api'
+import { OnboardingTooltip } from '@/components/builder/OnboardingTooltip'
 
 export function Step3Personal() {
   const { t } = useTranslation()
@@ -23,7 +24,9 @@ export function Step3Personal() {
 
   return (
     <div className="flex-1 overflow-y-auto p-6 lg:p-8">
-      <h2 className="text-xl font-bold mb-1">{t('builder.step3Title')}</h2>
+      <OnboardingTooltip tooltipKey="step3-sections" textKey="builder.onboardingStep3" side="bottom" className="block mb-1">
+        <h2 className="text-xl font-bold">{t('builder.step3Title')}</h2>
+      </OnboardingTooltip>
       <p className="text-sm text-muted-foreground mb-6">{t('builder.step3EditNote')}</p>
 
       {!p ? (

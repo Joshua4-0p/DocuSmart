@@ -10,9 +10,18 @@ interface CompletenessRingProps {
 }
 
 function ringColor(score: number): string {
-  if (score >= 70) return '#22c55e' // green
-  if (score >= 40) return '#f59e0b' // amber
+  if (score >= 81) return '#3b82f6' // blue
+  if (score >= 61) return '#22c55e' // green
+  if (score >= 31) return '#f59e0b' // amber
   return '#ef4444'                   // red
+}
+
+function milestoneKey(score: number): string {
+  if (score === 100) return 'builder.completenessComplete'
+  if (score >= 81)   return 'builder.completenessGreat'
+  if (score >= 61)   return 'builder.completenessNearly'
+  if (score >= 31)   return 'builder.completenessGood'
+  return 'builder.completenessStart'
 }
 
 export function CompletenessRing({ score, suggestions, onStepClick }: CompletenessRingProps) {
@@ -61,13 +70,7 @@ export function CompletenessRing({ score, suggestions, onStepClick }: Completene
             {t('builder.completeness')}
           </p>
           <p className="text-[10px] text-muted-foreground mt-0.5">
-            {score < 40
-              ? 'Getting started'
-              : score < 70
-              ? 'Good progress'
-              : score < 100
-              ? 'Almost there!'
-              : 'Complete!'}
+            {t(milestoneKey(score))}
           </p>
         </div>
       </div>

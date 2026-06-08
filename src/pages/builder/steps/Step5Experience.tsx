@@ -5,6 +5,7 @@ import { GripVertical } from 'lucide-react'
 import { ToggleCard } from '@/components/builder/ToggleCard'
 import { AIButton } from '@/components/builder/AIButton'
 import { DailyLimitBadge } from '@/components/builder/DailyLimitBadge'
+import { OnboardingTooltip } from '@/components/builder/OnboardingTooltip'
 import { useBuilderStore } from '@/store/builder.store'
 import { getProfileSnapshot } from '@/lib/api/profile.api'
 import { aiApi } from '@/lib/api/ai.api'
@@ -61,7 +62,9 @@ export function Step5Experience() {
   return (
     <div className="flex-1 overflow-y-auto p-6 lg:p-8">
       <div className="flex items-start justify-between mb-1">
-        <h2 className="text-xl font-bold">{t('builder.step5Title')}</h2>
+        <OnboardingTooltip tooltipKey="step5-rewrite" textKey="builder.onboardingStep5" side="bottom">
+          <h2 className="text-xl font-bold">{t('builder.step5Title')}</h2>
+        </OnboardingTooltip>
         <button
           type="button"
           onClick={() => toggleSection('experience')}

@@ -1,113 +1,17 @@
 import * as React from 'react'
 import type { BuilderState } from '../../types/document'
 import { getProfileSnapshot } from '../../lib/api/profile.api'
+import {
+  resolveAccentColor,
+  resolveFontPairing,
+  resolveSpacingMultiplier,
+  getSectionLabels,
+  hexWithAlpha,
+} from '../../lib/templates/templateSettings'
 
 interface HorizonProps {
   state: BuilderState
   scale?: number
-}
-
-const s = {
-  page: {
-    fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
-    fontSize: '10pt',
-    lineHeight: '1.45',
-    color: '#1a1a1a',
-    background: '#ffffff',
-    padding: '40px 48px',
-    minHeight: '297mm',
-    width: '210mm',
-    boxSizing: 'border-box' as const,
-  },
-  header: {
-    marginBottom: '20px',
-    paddingBottom: '16px',
-    borderBottom: '2.5px solid #378ADD',
-  },
-  name: {
-    fontSize: '22pt',
-    fontWeight: '700',
-    color: '#1a1a1a',
-    letterSpacing: '-0.3px',
-    margin: '0 0 3px',
-  },
-  title: {
-    fontSize: '11pt',
-    color: '#378ADD',
-    fontWeight: '600',
-    margin: '0 0 10px',
-  },
-  contactRow: {
-    display: 'flex' as const,
-    flexWrap: 'wrap' as const,
-    gap: '4px 16px',
-    fontSize: '8.5pt',
-    color: '#555',
-  },
-  sectionTitle: {
-    fontSize: '8.5pt',
-    fontWeight: '700',
-    textTransform: 'uppercase' as const,
-    letterSpacing: '1.2px',
-    color: '#378ADD',
-    borderBottom: '1px solid #dde8f5',
-    paddingBottom: '3px',
-    marginBottom: '10px',
-    marginTop: '18px',
-  },
-  entryHeader: {
-    display: 'flex' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'flex-start' as const,
-  },
-  entryTitle: {
-    fontSize: '10pt',
-    fontWeight: '600',
-    color: '#1a1a1a',
-    margin: '0 0 1px',
-  },
-  entrySubtitle: {
-    fontSize: '9pt',
-    color: '#555',
-    margin: '0 0 4px',
-  },
-  entryDate: {
-    fontSize: '8.5pt',
-    color: '#888',
-    whiteSpace: 'nowrap' as const,
-  },
-  bullet: {
-    margin: '0',
-    paddingLeft: '14px',
-    listStyleType: 'disc' as const,
-  },
-  bulletItem: {
-    fontSize: '9pt',
-    color: '#333',
-    marginBottom: '2px',
-    lineHeight: '1.4',
-  },
-  skillChip: {
-    display: 'inline-block' as const,
-    background: '#f0f6ff',
-    border: '1px solid #dde8f5',
-    borderRadius: '3px',
-    padding: '1px 7px',
-    fontSize: '8.5pt',
-    color: '#378ADD',
-    margin: '2px 3px 2px 0',
-  },
-  paragraph: {
-    fontSize: '9pt',
-    color: '#333',
-    lineHeight: '1.5',
-    margin: '0',
-  },
-  twoCol: {
-    display: 'grid' as const,
-    gridTemplateColumns: '1fr 1fr' as const,
-    gap: '0 24px',
-  },
 }
 
 function fmt(date?: string): string {
@@ -116,28 +20,41 @@ function fmt(date?: string): string {
   return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, accent, children }: { title: string; accent: string; children: React.ReactNode }) {
   return (
     <div>
-      <div style={s.sectionTitle}>{title}</div>
+      <div style={{
+        fontSize: '8.5pt',
+        fontWeight: '700',
+        textTransform: 'uppercase',
+        letterSpacing: '1.2px',
+        color: accent,
+        borderBottom: `1px solid ${hexWithAlpha(accent, 0.25)}`,
+        paddingBottom: '3px',
+        marginBottom: '10px',
+        marginTop: '18px',
+      }}>{title}</div>
       {children}
     </div>
   )
 }
 
-export function HorizonTemplate({ state, scale = 1 }: HorizonProps) {
+function HorizonTemplateInner({ state, scale = 1 }: HorizonProps) {
   const profile = getProfileSnapshot()
-  const { selectedSections, sectionOrder, generatedContent } = state
+  const { selectedSections, sectionOrder, generatedContent, language } = state
+
+  const accent = resolveAccentColor(state.accentColor)
+  const fonts = resolveFontPairing(state.fontPairing)
+  const sp = resolveSpacingMultiplier(state.spacing)
+  const labels = getSectionLabels(language ?? 'en')
 
   const personal = profile.personal
   const isIncluded = (key: string) => selectedSections.includes(key)
 
-  // Sort sections by user-defined order
   const orderedSections = sectionOrder.filter(
     (s) => isIncluded(s) && s !== 'personal' && s !== 'summary',
   )
 
-  // Detect graduate ordering (FR-030)
   const totalExpYears = profile.experience.reduce((acc, exp) => {
     const start = exp.startDate ? new Date(exp.startDate).getFullYear() : 0
     const end = exp.endDate ? new Date(exp.endDate).getFullYear() : new Date().getFullYear()
@@ -155,47 +72,75 @@ export function HorizonTemplate({ state, scale = 1 }: HorizonProps) {
 
   const summary = generatedContent['summary'] ?? personal?.summary ?? ''
 
+  const page: React.CSSProperties = {
+    fontFamily: fonts.body,
+    fontSize: '10pt',
+    lineHeight: '1.45',
+    color: '#1a1a1a',
+    background: '#ffffff',
+    padding: `${Math.round(40 * sp)}px ${Math.round(48 * sp)}px`,
+    minHeight: '297mm',
+    width: '210mm',
+    boxSizing: 'border-box',
+  }
+
+  const entryHeaderStyle: React.CSSProperties = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  }
+  const entryTitle: React.CSSProperties = { fontSize: '10pt', fontWeight: '600', color: '#1a1a1a', margin: '0 0 1px', fontFamily: fonts.heading }
+  const entrySubtitle: React.CSSProperties = { fontSize: '9pt', color: '#555', margin: '0 0 4px' }
+  const entryDate: React.CSSProperties = { fontSize: '8.5pt', color: '#888', whiteSpace: 'nowrap' }
+  const bulletList: React.CSSProperties = { margin: '0', paddingLeft: '14px', listStyleType: 'disc' }
+  const bulletItem: React.CSSProperties = { fontSize: '9pt', color: '#333', marginBottom: `${Math.round(2 * sp)}px`, lineHeight: '1.4' }
+  const paragraph: React.CSSProperties = { fontSize: '9pt', color: '#333', lineHeight: '1.5', margin: '0' }
+  const skillChip: React.CSSProperties = {
+    display: 'inline-block',
+    background: hexWithAlpha(accent, 0.08),
+    border: `1px solid ${hexWithAlpha(accent, 0.25)}`,
+    borderRadius: '3px',
+    padding: '1px 7px',
+    fontSize: '8.5pt',
+    color: accent,
+    margin: '2px 3px 2px 0',
+  }
+
   return (
-    <div
-      style={{
-        transform: `scale(${scale})`,
-        transformOrigin: 'top left',
-        width: scale !== 1 ? `${100 / scale}%` : undefined,
-      }}
-    >
-      <div style={s.page} id="horizon-template">
+    <div style={{ transform: `scale(${scale})`, transformOrigin: 'top left', width: scale !== 1 ? `${100 / scale}%` : undefined }}>
+      <div style={page} id="horizon-template" data-ats-safe="true">
         {/* Header */}
-        {personal && (
-          <div style={s.header}>
-            <p style={s.name}>
-              {personal.firstName} {personal.lastName}
-            </p>
-            {personal.professionalTitle && (
-              <p style={s.title}>{personal.professionalTitle}</p>
-            )}
-            <div style={s.contactRow}>
-              {personal.phone && <span>{personal.phone}</span>}
-              {personal.city && <span>{personal.city}{personal.country ? `, ${personal.country}` : ''}</span>}
-              {personal.linkedinUrl && <span>{personal.linkedinUrl.replace('https://', '')}</span>}
-              {personal.websiteUrl && <span>{personal.websiteUrl.replace('https://', '')}</span>}
-              {personal.githubUrl && <span>{personal.githubUrl.replace('https://github.com/', 'github.com/')}</span>}
-              {personal.cameroonian && personal.nationality && (
-                <span>Nationality: {personal.nationality}</span>
+        <div style={{ marginBottom: `${Math.round(20 * sp)}px`, paddingBottom: '16px', borderBottom: `2.5px solid ${accent}` }}>
+          {personal ? (
+            <>
+              <p style={{ fontSize: '22pt', fontWeight: '700', color: '#1a1a1a', letterSpacing: '-0.3px', margin: '0 0 3px', fontFamily: fonts.heading }}>
+                {personal.firstName} {personal.lastName}
+              </p>
+              {personal.professionalTitle && (
+                <p style={{ fontSize: '11pt', color: accent, fontWeight: '600', margin: '0 0 10px', fontFamily: fonts.heading }}>
+                  {personal.professionalTitle}
+                </p>
               )}
-            </div>
+            </>
+          ) : (
+            <>
+              <p style={{ fontSize: '22pt', fontWeight: '700', fontFamily: fonts.heading, margin: '0 0 3px' }}>Your Name</p>
+              <p style={{ fontSize: '11pt', color: accent, fontWeight: '600', margin: '0 0 10px' }}>Professional Title</p>
+            </>
+          )}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 16px', fontSize: '8.5pt', color: '#555' }}>
+            {personal?.phone && <span>{personal.phone}</span>}
+            {personal?.city && <span>{personal.city}{personal.country ? `, ${personal.country}` : ''}</span>}
+            {personal?.linkedinUrl && <span>{personal.linkedinUrl.replace('https://', '')}</span>}
+            {personal?.websiteUrl && <span>{personal.websiteUrl.replace('https://', '')}</span>}
+            {personal?.githubUrl && <span>{personal.githubUrl.replace('https://github.com/', 'github.com/')}</span>}
           </div>
-        )}
-        {!personal && (
-          <div style={s.header}>
-            <p style={s.name}>Your Name</p>
-            <p style={s.title}>Professional Title</p>
-          </div>
-        )}
+        </div>
 
         {/* Summary */}
         {isIncluded('summary') && summary && (
-          <Section title="Professional Summary">
-            <p style={s.paragraph}>{summary}</p>
+          <Section title={labels.summary} accent={accent}>
+            <p style={paragraph}>{summary}</p>
           </Section>
         )}
 
@@ -204,34 +149,23 @@ export function HorizonTemplate({ state, scale = 1 }: HorizonProps) {
           switch (sectionKey) {
             case 'experience':
               return profile.experience.length > 0 ? (
-                <Section key="experience" title="Work Experience">
+                <Section key="experience" title={labels.experience} accent={accent}>
                   {profile.experience.map((exp) => {
                     const bullets = generatedContent[`exp-${exp.id}`]
                       ? generatedContent[`exp-${exp.id}`].split('\n').filter(Boolean)
-                      : exp.description
-                        ? exp.description.split('\n').filter(Boolean)
-                        : exp.achievements
-
+                      : exp.description ? exp.description.split('\n').filter(Boolean) : exp.achievements
                     return (
-                      <div key={exp.id} style={{ marginBottom: '12px' }}>
-                        <div style={s.entryHeader}>
+                      <div key={exp.id} style={{ marginBottom: `${Math.round(12 * sp)}px` }}>
+                        <div style={entryHeaderStyle}>
                           <div>
-                            <p style={s.entryTitle}>{exp.jobTitle}</p>
-                            <p style={s.entrySubtitle}>
-                              {exp.company}
-                              {exp.location ? ` · ${exp.location}` : ''}
-                              {exp.remote ? ' · Remote' : ''}
-                            </p>
+                            <p style={entryTitle}>{exp.jobTitle}</p>
+                            <p style={entrySubtitle}>{exp.company}{exp.location ? ` · ${exp.location}` : ''}</p>
                           </div>
-                          <span style={s.entryDate}>
-                            {fmt(exp.startDate)} – {exp.ongoing ? 'Present' : fmt(exp.endDate)}
-                          </span>
+                          <span style={entryDate}>{fmt(exp.startDate)} – {exp.ongoing ? 'Present' : fmt(exp.endDate)}</span>
                         </div>
                         {bullets.length > 0 && (
-                          <ul style={s.bullet}>
-                            {bullets.map((b, i) => (
-                              <li key={i} style={s.bulletItem}>{b.replace(/^[•\-]\s*/, '')}</li>
-                            ))}
+                          <ul style={bulletList}>
+                            {bullets.map((b, i) => <li key={i} style={bulletItem}>{b.replace(/^[•\-]\s*/, '')}</li>)}
                           </ul>
                         )}
                       </div>
@@ -242,33 +176,17 @@ export function HorizonTemplate({ state, scale = 1 }: HorizonProps) {
 
             case 'education':
               return profile.education.length > 0 ? (
-                <Section key="education" title="Education">
+                <Section key="education" title={labels.education} accent={accent}>
                   {profile.education.map((edu) => (
-                    <div key={edu.id} style={{ marginBottom: '10px' }}>
-                      <div style={s.entryHeader}>
+                    <div key={edu.id} style={{ marginBottom: `${Math.round(10 * sp)}px` }}>
+                      <div style={entryHeaderStyle}>
                         <div>
-                          <p style={s.entryTitle}>
-                            {edu.degreeType.toUpperCase()} in {edu.fieldOfStudy}
-                          </p>
-                          <p style={s.entrySubtitle}>
-                            {edu.institution}
-                            {edu.city ? `, ${edu.city}` : ''}
-                            {edu.country ? `, ${edu.country}` : ''}
-                          </p>
+                          <p style={entryTitle}>{edu.degreeType.toUpperCase()} in {edu.fieldOfStudy}</p>
+                          <p style={entrySubtitle}>{edu.institution}{edu.city ? `, ${edu.city}` : ''}</p>
                         </div>
-                        <span style={s.entryDate}>
-                          {fmt(edu.startDate)} – {edu.ongoing ? 'Present' : fmt(edu.endDate)}
-                        </span>
+                        <span style={entryDate}>{fmt(edu.startDate)} – {edu.ongoing ? 'Present' : fmt(edu.endDate)}</span>
                       </div>
-                      {edu.showGpa && edu.gpa && (
-                        <p style={{ ...s.entrySubtitle, fontSize: '8.5pt' }}>GPA: {edu.gpa}</p>
-                      )}
-                      {edu.description && <p style={s.paragraph}>{edu.description}</p>}
-                      {edu.honors.length > 0 && (
-                        <p style={{ ...s.paragraph, fontStyle: 'italic' }}>
-                          Honours: {edu.honors.join(', ')}
-                        </p>
-                      )}
+                      {edu.showGpa && edu.gpa && <p style={{ ...entrySubtitle, fontSize: '8.5pt' }}>GPA: {edu.gpa}</p>}
                     </div>
                   ))}
                 </Section>
@@ -276,41 +194,12 @@ export function HorizonTemplate({ state, scale = 1 }: HorizonProps) {
 
             case 'skills': {
               if (!profile.skills.length) return null
-              const techSkills = profile.skills.filter((s) =>
-                ['programming', 'tools', 'frameworks', 'technical', undefined].includes(
-                  s.category?.toLowerCase(),
-                ),
-              )
-              const softSkills = profile.skills.filter(
-                (s) => s.category?.toLowerCase() === 'soft',
-              )
-              const others = profile.skills.filter(
-                (s) => !techSkills.includes(s) && !softSkills.includes(s),
-              )
               return (
-                <Section key="skills" title="Skills">
+                <Section key="skills" title={labels.skills} accent={accent}>
                   <div>
-                    {techSkills.length > 0 && (
-                      <div style={{ marginBottom: '4px' }}>
-                        {techSkills.map((sk) => (
-                          <span key={sk.id} style={s.skillChip}>{sk.name}</span>
-                        ))}
-                      </div>
-                    )}
-                    {softSkills.length > 0 && (
-                      <div style={{ marginBottom: '4px' }}>
-                        {softSkills.map((sk) => (
-                          <span key={sk.id} style={{ ...s.skillChip, background: '#f5f5f0', color: '#555', borderColor: '#ddd' }}>{sk.name}</span>
-                        ))}
-                      </div>
-                    )}
-                    {others.length > 0 && (
-                      <div>
-                        {others.map((sk) => (
-                          <span key={sk.id} style={s.skillChip}>{sk.name}</span>
-                        ))}
-                      </div>
-                    )}
+                    {profile.skills.map((sk) => (
+                      <span key={sk.id} style={skillChip}>{sk.name}</span>
+                    ))}
                   </div>
                 </Section>
               )
@@ -318,28 +207,17 @@ export function HorizonTemplate({ state, scale = 1 }: HorizonProps) {
 
             case 'projects':
               return profile.projects.length > 0 ? (
-                <Section key="projects" title="Projects">
+                <Section key="projects" title={labels.projects} accent={accent}>
                   {profile.projects.map((proj) => (
-                    <div key={proj.id} style={{ marginBottom: '10px' }}>
-                      <div style={s.entryHeader}>
+                    <div key={proj.id} style={{ marginBottom: `${Math.round(10 * sp)}px` }}>
+                      <div style={entryHeaderStyle}>
                         <div>
-                          <p style={s.entryTitle}>
-                            {proj.name}
-                            {proj.status === 'ongoing' ? ' (Ongoing)' : ''}
-                          </p>
-                          {proj.technologies.length > 0 && (
-                            <p style={{ ...s.entrySubtitle, fontSize: '8.5pt' }}>
-                              {proj.technologies.join(', ')}
-                            </p>
-                          )}
+                          <p style={entryTitle}>{proj.name}</p>
+                          {proj.technologies.length > 0 && <p style={{ ...entrySubtitle, fontSize: '8.5pt' }}>{proj.technologies.join(', ')}</p>}
                         </div>
-                        {proj.startDate && (
-                          <span style={s.entryDate}>
-                            {fmt(proj.startDate)}{proj.endDate ? ` – ${fmt(proj.endDate)}` : ''}
-                          </span>
-                        )}
+                        {proj.startDate && <span style={entryDate}>{fmt(proj.startDate)}</span>}
                       </div>
-                      {proj.description && <p style={s.paragraph}>{proj.description}</p>}
+                      {proj.description && <p style={paragraph}>{proj.description}</p>}
                     </div>
                   ))}
                 </Section>
@@ -347,15 +225,15 @@ export function HorizonTemplate({ state, scale = 1 }: HorizonProps) {
 
             case 'certifications':
               return profile.certifications.length > 0 ? (
-                <Section key="certifications" title="Certifications">
+                <Section key="certifications" title={labels.certifications} accent={accent}>
                   {profile.certifications.map((cert) => (
                     <div key={cert.id} style={{ marginBottom: '6px' }}>
-                      <div style={s.entryHeader}>
+                      <div style={entryHeaderStyle}>
                         <div>
-                          <p style={s.entryTitle}>{cert.name}</p>
-                          <p style={s.entrySubtitle}>{cert.issuingOrg}</p>
+                          <p style={entryTitle}>{cert.name}</p>
+                          <p style={entrySubtitle}>{cert.issuingOrg}</p>
                         </div>
-                        <span style={s.entryDate}>{fmt(cert.dateIssued)}</span>
+                        <span style={entryDate}>{fmt(cert.dateIssued)}</span>
                       </div>
                     </div>
                   ))}
@@ -364,79 +242,46 @@ export function HorizonTemplate({ state, scale = 1 }: HorizonProps) {
 
             case 'languages':
               return profile.languages.length > 0 ? (
-                <Section key="languages" title="Languages">
-                  <div style={s.twoCol}>
+                <Section key="languages" title={labels.languages} accent={accent}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
                     {profile.languages.map((lang) => (
                       <div key={lang.id} style={{ marginBottom: '4px' }}>
                         <span style={{ fontWeight: '600', fontSize: '9pt' }}>{lang.language}</span>
-                        <span style={{ ...s.entryDate, marginLeft: '6px' }}>{lang.level}</span>
+                        <span style={{ ...entryDate, marginLeft: '6px' }}>{lang.level}</span>
                       </div>
                     ))}
                   </div>
                 </Section>
               ) : null
 
-            case 'volunteer':
-              return profile.volunteer.length > 0 ? (
-                <Section key="volunteer" title="Volunteer Work">
-                  {profile.volunteer.map((vol) => (
-                    <div key={vol.id} style={{ marginBottom: '10px' }}>
-                      <div style={s.entryHeader}>
-                        <div>
-                          <p style={s.entryTitle}>{vol.role}</p>
-                          <p style={s.entrySubtitle}>{vol.organisation}</p>
-                        </div>
-                        <span style={s.entryDate}>
-                          {fmt(vol.startDate)} – {vol.ongoing ? 'Present' : fmt(vol.endDate)}
-                        </span>
-                      </div>
-                      {vol.description && <p style={s.paragraph}>{vol.description}</p>}
-                    </div>
-                  ))}
-                </Section>
-              ) : null
-
-            case 'publications':
-              return profile.publications.length > 0 ? (
-                <Section key="publications" title="Publications">
-                  {profile.publications.map((pub) => (
-                    <div key={pub.id} style={{ marginBottom: '8px' }}>
-                      <p style={s.entryTitle}>{pub.title}</p>
-                      <p style={s.entrySubtitle}>
-                        {pub.authors.join(', ')} — {pub.publication}, {fmt(pub.date)}
-                      </p>
-                    </div>
-                  ))}
-                </Section>
-              ) : null
-
             case 'references': {
               if (!profile.references.length) return null
-              const includeRefs = generatedContent['references-mode'] !== 'on-request'
+              const showFull = generatedContent['references-mode'] !== 'on-request'
               return (
-                <Section key="references" title="References">
-                  {includeRefs ? (
-                    <div style={s.twoCol}>
+                <Section key="references" title={labels.references} accent={accent}>
+                  {showFull ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 24px' }}>
                       {profile.references.map((ref) => (
                         <div key={ref.id} style={{ marginBottom: '8px' }}>
-                          <p style={s.entryTitle}>{ref.name}</p>
-                          <p style={s.entrySubtitle}>{ref.jobTitle} · {ref.company}</p>
-                          <p style={{ ...s.paragraph, color: '#888' }}>{ref.email}</p>
+                          <p style={entryTitle}>{ref.name}</p>
+                          <p style={entrySubtitle}>{ref.jobTitle} · {ref.company}</p>
+                          <p style={{ ...paragraph, color: '#888' }}>{ref.email}</p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p style={s.paragraph}>References available upon request.</p>
+                    <p style={paragraph}>References available upon request.</p>
                   )}
                 </Section>
               )
             }
 
-            default:
-              return null
+            default: return null
           }
         })}
       </div>
     </div>
   )
 }
+
+export const HorizonTemplate = React.memo(HorizonTemplateInner)

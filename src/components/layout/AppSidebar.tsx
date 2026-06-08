@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Settings,
+  LayoutTemplate,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
@@ -23,6 +24,7 @@ import { Button } from '@/components/ui/button'
 const primaryNav = [
   { key: 'dashboard', icon: LayoutDashboard, path: '/dashboard' },
   { key: 'documents', icon: FileText, path: '/documents' },
+  { key: 'templates', icon: LayoutTemplate, path: '/templates' },
 ] as const
 
 const profileSections = [

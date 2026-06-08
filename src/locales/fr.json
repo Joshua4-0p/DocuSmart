@@ -448,6 +448,32 @@
     "onboardingStep10": "Votre document est prêt. Téléchargez en PDF ou DOCX.",
     "gotIt": "Compris",
     "universityPlaceholder": "Rechercher des universités camerounaises…",
-    "institutionLabel": "Établissement"
+    "institutionLabel": "Établissement",
+    "completenessStart": "Allons-y !",
+    "completenessGood": "Bon début",
+    "completenessNearly": "Presque là",
+    "completenessGreat": "Très bien",
+    "completenessComplete": "Exceptionnel !"
+  },
+  "templates": {
+    "galleryTitle": "Galerie de modèles",
+    "gallerySubtitle": "Choisissez un modèle professionnel et personnalisez-le avec vos couleurs, polices et espacements.",
+    "catAll": "Tous",
+    "catSimple": "Simple",
+    "catModern": "Moderne",
+    "catCreative": "Créatif",
+    "customise": "Personnaliser le design",
+    "accentColor": "Couleur d'accent",
+    "fontPairing": "Paire de polices",
+    "spacing": "Espacement",
+    "spacingCompact": "Compact",
+    "spacingNormal": "Normal",
+    "spacingSpacious": "Aéré",
+    "switchTemplate": "Changer de modèle",
+    "selected": "Sélectionné ✓",
+    "useTemplate": "Utiliser ce modèle",
+    "updateSettings": "Mettre à jour les paramètres",
+    "notFound": "Modèle introuvable.",
+    "navLabel": "Modèles"
   }
 }

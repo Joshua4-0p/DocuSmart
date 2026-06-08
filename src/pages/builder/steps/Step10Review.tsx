@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { StrengthScoreCard } from '@/components/builder/StrengthScoreCard'
 import { ExportButton } from '@/components/builder/ExportButton'
 import { CompanionDocPrompt } from '@/components/builder/CompanionDocPrompt'
+import { OnboardingTooltip } from '@/components/builder/OnboardingTooltip'
 import { useBuilderStore } from '@/store/builder.store'
 import { aiApi } from '@/lib/api/ai.api'
 import { documentApi } from '@/lib/api/document.api'
@@ -56,7 +57,9 @@ export function Step10Review() {
 
   return (
     <div className="flex-1 overflow-y-auto p-6 lg:p-8">
-      <h2 className="text-xl font-bold mb-1">{t('builder.step10Title')}</h2>
+      <OnboardingTooltip tooltipKey="step10-score" textKey="builder.onboardingStep10" side="bottom" className="block mb-1">
+        <h2 className="text-xl font-bold">{t('builder.step10Title')}</h2>
+      </OnboardingTooltip>
       <p className="text-sm text-muted-foreground mb-6">
         Review your AI strength score and download your document.
       </p>

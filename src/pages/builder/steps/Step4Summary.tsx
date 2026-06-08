@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { AIButton } from '@/components/builder/AIButton'
 import { AILoadingOverlay } from '@/components/builder/AILoadingOverlay'
 import { DailyLimitBadge } from '@/components/builder/DailyLimitBadge'
+import { OnboardingTooltip } from '@/components/builder/OnboardingTooltip'
 import { useBuilderStore } from '@/store/builder.store'
 import { aiApi } from '@/lib/api/ai.api'
 
@@ -46,7 +47,9 @@ export function Step4Summary() {
 
   return (
     <div className="flex-1 overflow-y-auto p-6 lg:p-8">
-      <h2 className="text-xl font-bold mb-1">{t('builder.step4Title')}</h2>
+      <OnboardingTooltip tooltipKey="step4-ai" textKey="builder.onboardingStep4" side="bottom" className="block mb-1">
+        <h2 className="text-xl font-bold">{t('builder.step4Title')}</h2>
+      </OnboardingTooltip>
       <p className="text-sm text-muted-foreground mb-6">
         A tailored 3-sentence summary for your target role.
       </p>

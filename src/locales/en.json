@@ -448,6 +448,32 @@
     "onboardingStep10": "Your document is ready. Download as PDF or DOCX.",
     "gotIt": "Got it",
     "universityPlaceholder": "Type to search Cameroonian universities…",
-    "institutionLabel": "Institution"
+    "institutionLabel": "Institution",
+    "completenessStart": "Let's go!",
+    "completenessGood": "Good start",
+    "completenessNearly": "Nearly there",
+    "completenessGreat": "Looking great",
+    "completenessComplete": "Outstanding!"
+  },
+  "templates": {
+    "galleryTitle": "Template Gallery",
+    "gallerySubtitle": "Choose a professional template and personalise it with your own colours, fonts, and spacing.",
+    "catAll": "All",
+    "catSimple": "Simple",
+    "catModern": "Modern",
+    "catCreative": "Creative",
+    "customise": "Customise Design",
+    "accentColor": "Accent Colour",
+    "fontPairing": "Font Pairing",
+    "spacing": "Spacing",
+    "spacingCompact": "Compact",
+    "spacingNormal": "Normal",
+    "spacingSpacious": "Spacious",
+    "switchTemplate": "Change Template",
+    "selected": "Selected ✓",
+    "useTemplate": "Use Template",
+    "updateSettings": "Update Settings",
+    "notFound": "Template not found.",
+    "navLabel": "Templates"
   }
 }

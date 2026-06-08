@@ -1,4 +1,4 @@
-import { GripVertical } from 'lucide-react'
+import { RotateCcw, GripVertical } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import {
   DndContext,
@@ -18,7 +18,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { cn } from '@/lib/utils'
-import type { SectionKey } from '@/types/document'
+import { DEFAULT_SECTION_ORDER, type SectionKey } from '@/types/document'
 
 const SECTION_LABELS: Record<SectionKey, string> = {
   personal: 'Personal Details',
@@ -82,11 +82,25 @@ export function SectionOrderPanel({ sections, onChange }: SectionOrderPanelProps
     }
   }
 
+  const handleReset = () => {
+    onChange([...DEFAULT_SECTION_ORDER])
+  }
+
   return (
     <div className="p-3 border-b border-border">
-      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-        {t('builder.reorderSections')}
-      </p>
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+          {t('builder.reorderSections')}
+        </p>
+        <button
+          type="button"
+          onClick={handleReset}
+          title={t('builder.resetSectionOrder')}
+          className="text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <RotateCcw className="size-3" />
+        </button>
+      </div>
       <p className="text-[10px] text-muted-foreground mb-2">{t('builder.dragToReorder')}</p>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sections} strategy={verticalListSortingStrategy}>

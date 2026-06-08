@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { HorizonTemplate } from '@/components/templates/HorizonTemplate'
+import { getTemplateComponent } from '@/components/templates'
 import { CoverLetterTemplate } from '@/components/templates/CoverLetterTemplate'
 import { PreviewToolbar } from '@/components/builder/PreviewToolbar'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -42,7 +42,9 @@ export function LivePreviewPanel({ state, mobileView = false }: LivePreviewProps
   }
 
   const Template =
-    debouncedState.documentType === 'cover_letter' ? CoverLetterTemplate : HorizonTemplate
+    debouncedState.documentType === 'cover_letter'
+      ? CoverLetterTemplate
+      : getTemplateComponent(debouncedState.templateId)
 
   const wrapperCls = fullscreen
     ? 'fixed inset-0 z-50 flex flex-col bg-background'
