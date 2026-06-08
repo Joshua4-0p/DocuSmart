@@ -46,7 +46,7 @@ function QuicksilverInner({ state, scale = 1 }: Props) {
       <div id="quicksilver-template" data-photo-enabled="true" style={{ fontFamily: fonts.body, minHeight: '297mm', width: '210mm', boxSizing: 'border-box', background: '#fff' }}>
 
         {/* Geometric header: accent left block (45%) + white right (55%) */}
-        <div style={{ display: 'flex', height: `${Math.round(140 * sp)}px`, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', minHeight: `${Math.round(140 * sp)}px`, position: 'relative', overflow: 'hidden' }}>
           {/* Accent panel */}
           <div style={{ width: '45%', background: accent, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
             {p?.avatarUrl ? (
@@ -58,10 +58,10 @@ function QuicksilverInner({ state, scale = 1 }: Props) {
             )}
           </div>
           {/* Diagonal clip: white trapezoid overlay on right edge of accent */}
-          <div style={{ position: 'absolute', top: 0, left: '38%', width: '16%', height: '100%', background: '#fff', clipPath: 'polygon(40% 0%, 100% 0%, 100% 100%, 0% 100%)' }} />
-          {/* White name panel */}
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: '24px', paddingRight: '20px' }}>
-            <p style={{ fontFamily: fonts.heading, fontSize: '18pt', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px', lineHeight: '1.1' }}>
+          <div style={{ position: 'absolute', top: 0, left: '38%', width: '16%', height: '100%', background: '#fff', clipPath: 'polygon(40% 0%, 100% 0%, 100% 100%, 0% 100%)', zIndex: 0 }} />
+          {/* White name panel — z-index 1 keeps text above the diagonal overlay */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingLeft: '80px', paddingRight: '20px', paddingTop: '12px', paddingBottom: '12px', position: 'relative', zIndex: 1 }}>
+            <p style={{ fontFamily: fonts.heading, fontSize: '18pt', fontWeight: '700', color: '#1a1a1a', margin: '0 0 4px', lineHeight: '1.2', wordBreak: 'break-word' }}>
               {p ? `${p.firstName} ${p.lastName}` : 'Your Name'}
             </p>
             {p?.professionalTitle && (
