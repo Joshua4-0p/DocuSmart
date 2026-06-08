@@ -254,6 +254,40 @@ function HorizonTemplateInner({ state, scale = 1 }: HorizonProps) {
                 </Section>
               ) : null
 
+            case 'volunteer':
+              return profile.volunteer.length > 0 ? (
+                <Section key="volunteer" title={labels.volunteer} accent={accent}>
+                  {profile.volunteer.map((vol) => (
+                    <div key={vol.id} style={{ marginBottom: `${Math.round(10 * sp)}px` }}>
+                      <div style={entryHeaderStyle}>
+                        <div>
+                          <p style={entryTitle}>{vol.role}</p>
+                          <p style={entrySubtitle}>{vol.organisation}</p>
+                        </div>
+                        <span style={entryDate}>{fmt(vol.startDate)} – {vol.ongoing ? 'Present' : fmt(vol.endDate)}</span>
+                      </div>
+                      {vol.description && <p style={paragraph}>{vol.description}</p>}
+                    </div>
+                  ))}
+                </Section>
+              ) : null
+
+            case 'publications':
+              return profile.publications.length > 0 ? (
+                <Section key="publications" title={labels.publications} accent={accent}>
+                  {profile.publications.map((pub) => (
+                    <div key={pub.id} style={{ marginBottom: '8px' }}>
+                      <div style={entryHeaderStyle}>
+                        <p style={entryTitle}>{pub.title}</p>
+                        <span style={entryDate}>{fmt(pub.date)}</span>
+                      </div>
+                      <p style={entrySubtitle}>{pub.publication}{pub.authors.length > 0 ? ` · ${pub.authors.join(', ')}` : ''}</p>
+                      {pub.description && <p style={paragraph}>{pub.description}</p>}
+                    </div>
+                  ))}
+                </Section>
+              ) : null
+
             case 'references': {
               if (!profile.references.length) return null
               const showFull = generatedContent['references-mode'] !== 'on-request'

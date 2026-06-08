@@ -177,6 +177,43 @@ function GreyGooseInner({ state, scale = 1 }: Props) {
                     ))}
                   </div>
                 ) : null
+              case 'volunteer':
+                return profile.volunteer.length > 0 ? (
+                  <div key="volunteer">
+                    <div style={sectionHead}>
+                      {labels.volunteer}
+                      <span style={{ flex: 1, height: '1px', background: hexWithAlpha(accent, 0.2) }} />
+                    </div>
+                    {profile.volunteer.map((vol) => (
+                      <div key={vol.id} style={{ marginBottom: `${Math.round(10 * sp)}px` }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <div><p style={entryTitle}>{vol.role}</p><p style={entryMeta}>{vol.organisation}</p></div>
+                          <span style={dateStyle}>{fmt(vol.startDate)} – {vol.ongoing ? 'Present' : fmt(vol.endDate)}</span>
+                        </div>
+                        {vol.description && <p style={para}>{vol.description}</p>}
+                      </div>
+                    ))}
+                  </div>
+                ) : null
+              case 'publications':
+                return profile.publications.length > 0 ? (
+                  <div key="publications">
+                    <div style={sectionHead}>
+                      {labels.publications}
+                      <span style={{ flex: 1, height: '1px', background: hexWithAlpha(accent, 0.2) }} />
+                    </div>
+                    {profile.publications.map((pub) => (
+                      <div key={pub.id} style={{ marginBottom: `${Math.round(8 * sp)}px` }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <p style={entryTitle}>{pub.title}</p>
+                          <span style={dateStyle}>{fmt(pub.date)}</span>
+                        </div>
+                        <p style={entryMeta}>{pub.publication}{pub.authors.length > 0 ? ` · ${pub.authors.join(', ')}` : ''}</p>
+                        {pub.description && <p style={para}>{pub.description}</p>}
+                      </div>
+                    ))}
+                  </div>
+                ) : null
               default: return null
             }
           })}

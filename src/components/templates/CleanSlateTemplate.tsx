@@ -184,6 +184,40 @@ function CleanSlateInner({ state, scale = 1 }: Props) {
                 </SectionBlock>
               ) : null
 
+            case 'volunteer':
+              return profile.volunteer.length > 0 ? (
+                <SectionBlock key="volunteer" title={labels.volunteer}>
+                  {profile.volunteer.map((vol) => (
+                    <div key={vol.id} style={{ marginBottom: `${Math.round(10 * sp)}px` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <p style={entryTitle}>{vol.role}</p>
+                          <p style={entryMeta}>{vol.organisation}</p>
+                        </div>
+                        <span style={entryDate}>{fmt(vol.startDate)} – {vol.ongoing ? 'Present' : fmt(vol.endDate)}</span>
+                      </div>
+                      {vol.description && <p style={para}>{vol.description}</p>}
+                    </div>
+                  ))}
+                </SectionBlock>
+              ) : null
+
+            case 'publications':
+              return profile.publications.length > 0 ? (
+                <SectionBlock key="publications" title={labels.publications}>
+                  {profile.publications.map((pub) => (
+                    <div key={pub.id} style={{ marginBottom: `${Math.round(8 * sp)}px` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <p style={entryTitle}>{pub.title}</p>
+                        <span style={entryDate}>{fmt(pub.date)}</span>
+                      </div>
+                      <p style={entryMeta}>{pub.publication}{pub.authors.length > 0 ? ` · ${pub.authors.join(', ')}` : ''}</p>
+                      {pub.description && <p style={para}>{pub.description}</p>}
+                    </div>
+                  ))}
+                </SectionBlock>
+              ) : null
+
             case 'references': {
               if (!profile.references.length) return null
               return (
