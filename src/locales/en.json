@@ -462,6 +462,8 @@
     "catSimple": "Simple",
     "catModern": "Modern",
     "catCreative": "Creative",
+    "catAtsOptimised": "ATS-Optimised",
+    "noResults": "No templates found for this category.",
     "customise": "Customise Design",
     "accentColor": "Accent Colour",
     "fontPairing": "Font Pairing",

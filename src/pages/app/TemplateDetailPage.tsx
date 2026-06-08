@@ -3,10 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { ArrowLeft, Wand2 } from 'lucide-react'
 import { TEMPLATES } from '@/lib/templates/templateSettings'
-import { getTemplateComponent } from '@/components/templates'
 import { AccentColorPicker } from '@/components/templates/AccentColorPicker'
 import { FontPairingSelector } from '@/components/templates/FontPairingSelector'
 import { SpacingToggle } from '@/components/templates/SpacingToggle'
+import { TemplatePreviewLarge } from '@/components/builder/TemplatePreviewLarge'
 import { useBuilderStore } from '@/store/builder.store'
 
 export default function TemplateDetailPage() {
@@ -15,9 +15,9 @@ export default function TemplateDetailPage() {
   const navigate = useNavigate()
   const { templateId, accentColor, fontPairing, spacing, setTemplateSettings } = useBuilderStore()
 
-  const template = TEMPLATES.find((t) => t.id === slug)
+  const template = TEMPLATES.find((tmpl) => tmpl.id === slug)
 
-  // Local preview settings (don't write to store until "Use Template")
+  // Local preview settings — don't write to store until "Use Template"
   const [previewAccent, setPreviewAccent] = React.useState(
     slug === templateId ? accentColor : 'navy',
   )
@@ -36,12 +36,10 @@ export default function TemplateDetailPage() {
     )
   }
 
-  const TemplateComponent = getTemplateComponent(template.id)
-
-  // Construct a mock state for preview
-  const previewState = useBuilderStore.getState()
+  // Build mock state for TemplatePreviewLarge
+  const baseState = useBuilderStore.getState()
   const mockState = {
-    ...previewState,
+    ...baseState,
     templateId: template.id,
     accentColor: previewAccent,
     fontPairing: previewFont,
@@ -72,23 +70,22 @@ export default function TemplateDetailPage() {
             {t('common.back')}
           </button>
           <h1 className="text-lg font-bold text-foreground">{template.name}</h1>
-          <p className="text-sm text-muted-foreground capitalize">{template.category} · {template.atsSafe ? 'ATS-safe' : ''}</p>
+          <p className="text-sm text-muted-foreground capitalize">
+            {template.category}{template.atsSafe ? ' · ATS-safe' : ''}
+          </p>
         </div>
 
         <div className="p-4 space-y-5">
-          {/* Accent colour */}
           <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">{t('templates.accentColor')}</p>
             <AccentColorPicker value={previewAccent} onChange={setPreviewAccent} />
           </div>
 
-          {/* Font pairing */}
           <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">{t('templates.fontPairing')}</p>
             <FontPairingSelector value={previewFont} onChange={setPreviewFont} />
           </div>
 
-          {/* Spacing */}
           <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2.5">{t('templates.spacing')}</p>
             <SpacingToggle value={previewSpacing} onChange={setPreviewSpacing} />
@@ -105,12 +102,8 @@ export default function TemplateDetailPage() {
         </div>
       </div>
 
-      {/* Right panel: live preview */}
-      <div className="flex-1 overflow-auto bg-muted/30 p-6 flex justify-center">
-        <div className="shadow-2xl rounded overflow-hidden" style={{ zoom: 0.55, transformOrigin: 'top center' }}>
-          <TemplateComponent state={mockState} scale={1} />
-        </div>
-      </div>
+      {/* Right panel: live preview via TemplatePreviewLarge */}
+      <TemplatePreviewLarge state={mockState} zoom={0.55} />
     </div>
   )
 }

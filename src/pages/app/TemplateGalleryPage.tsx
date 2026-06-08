@@ -1,29 +1,37 @@
 import * as React from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { TEMPLATES } from '@/lib/templates/templateSettings'
 import { TemplateCard } from '@/components/templates/TemplateCard'
+import { TemplateGalleryFilters, type GalleryCategory } from '@/components/templates/TemplateGalleryFilters'
 import { useBuilderStore } from '@/store/builder.store'
-
-type Category = 'all' | 'simple' | 'modern' | 'creative'
 
 export default function TemplateGalleryPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const { templateId, accentColor, setTemplateSettings } = useBuilderStore()
-  const [activeCategory, setActiveCategory] = React.useState<Category>('all')
+
+  // Read category from URL; fall back to 'all'
+  const rawCat = searchParams.get('category') as GalleryCategory | null
+  const validCats: GalleryCategory[] = ['all', 'simple', 'modern', 'creative', 'ats-optimised']
+  const activeCategory: GalleryCategory = rawCat && validCats.includes(rawCat) ? rawCat : 'all'
+
   const [previewAccents, setPreviewAccents] = React.useState<Record<string, string>>({})
 
-  const filtered = TEMPLATES.filter(
-    (tmpl) => activeCategory === 'all' || tmpl.category === activeCategory,
-  )
+  const filtered = TEMPLATES.filter((tmpl) => {
+    if (activeCategory === 'all') return true
+    if (activeCategory === 'ats-optimised') return tmpl.atsSafe === true
+    return tmpl.category === activeCategory
+  })
 
-  const categories: { id: Category; labelKey: string }[] = [
-    { id: 'all',      labelKey: 'templates.catAll' },
-    { id: 'simple',   labelKey: 'templates.catSimple' },
-    { id: 'modern',   labelKey: 'templates.catModern' },
-    { id: 'creative', labelKey: 'templates.catCreative' },
-  ]
+  const handleCategoryChange = (cat: GalleryCategory) => {
+    if (cat === 'all') {
+      setSearchParams({})
+    } else {
+      setSearchParams({ category: cat })
+    }
+  }
 
   const handleAccentChange = (tid: string, accent: string) => {
     setPreviewAccents((prev) => ({ ...prev, [tid]: accent }))
@@ -35,6 +43,10 @@ export default function TemplateGalleryPage() {
     navigate(`/templates/${tid}`)
   }
 
+  const handlePreview = (tid: string) => {
+    navigate(`/templates/${tid}`)
+  }
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 md:py-12">
       {/* Page header */}
@@ -43,23 +55,9 @@ export default function TemplateGalleryPage() {
         <p className="mt-1.5 text-muted-foreground">{t('templates.gallerySubtitle')}</p>
       </div>
 
-      {/* Category filter tabs */}
-      <div className="flex gap-2 mb-6 flex-wrap">
-        {categories.map((cat) => (
-          <button
-            key={cat.id}
-            type="button"
-            onClick={() => setActiveCategory(cat.id)}
-            className={[
-              'px-4 py-2 rounded-full text-sm font-medium transition-colors border',
-              activeCategory === cat.id
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-background text-muted-foreground border-border hover:bg-muted',
-            ].join(' ')}
-          >
-            {t(cat.labelKey)}
-          </button>
-        ))}
+      {/* Category filter tabs — standalone component, synced to URL */}
+      <div className="mb-6">
+        <TemplateGalleryFilters active={activeCategory} onChange={handleCategoryChange} />
       </div>
 
       {/* 3-column grid */}
@@ -72,10 +70,15 @@ export default function TemplateGalleryPage() {
             isSelected={tmpl.id === templateId}
             isPro={false}
             onSelect={handleSelect}
+            onPreview={handlePreview}
             onAccentChange={handleAccentChange}
           />
         ))}
       </div>
+
+      {filtered.length === 0 && (
+        <p className="text-center text-muted-foreground py-12">{t('templates.noResults')}</p>
+      )}
     </div>
   )
 }

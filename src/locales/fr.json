@@ -462,6 +462,8 @@
     "catSimple": "Simple",
     "catModern": "Moderne",
     "catCreative": "Créatif",
+    "catAtsOptimised": "Optimisé ATS",
+    "noResults": "Aucun modèle trouvé pour cette catégorie.",
     "customise": "Personnaliser le design",
     "accentColor": "Couleur d'accent",
     "fontPairing": "Paire de polices",
