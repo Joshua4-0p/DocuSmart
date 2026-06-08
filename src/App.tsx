@@ -27,6 +27,11 @@ import { NewDocumentPage } from '@/pages/app/documents/NewDocumentPage'
 import { BuilderPage } from '@/pages/builder/BuilderPage'
 import TemplateGalleryPage from '@/pages/app/TemplateGalleryPage'
 import TemplateDetailPage from '@/pages/app/TemplateDetailPage'
+import ApplicationsPage from '@/pages/app/ApplicationsPage'
+import ApplicationDetailPage from '@/pages/app/ApplicationDetailPage'
+import VersionHistoryPage from '@/pages/app/VersionHistoryPage'
+import InterviewCoachPage from '@/pages/app/InterviewCoachPage'
+import PublicProfilePage from '@/pages/PublicProfilePage'
 
 export function App() {
   return (
@@ -46,16 +51,25 @@ export function App() {
           <Route path="register" element={<RegisterPage />} />
         </Route>
 
+        {/* Public profile — no auth required */}
+        <Route path=":username" element={<PublicProfilePage />} />
+
         {/* Protected app */}
         <Route element={<ProtectedRoute />}>
           {/* Builder — full-screen, no AppLayout wrapper */}
           <Route path="builder/:documentId" element={<BuilderPage />} />
+
+          {/* Full-screen sub-pages — no AppLayout */}
+          <Route path="documents/:id/versions" element={<VersionHistoryPage />} />
+          <Route path="documents/:id/interview-coach" element={<InterviewCoachPage />} />
 
           {/* Standard app shell */}
           <Route element={<AppLayout />}>
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="documents" element={<DocumentsListPage />} />
             <Route path="documents/new" element={<NewDocumentPage />} />
+            <Route path="applications" element={<ApplicationsPage />} />
+            <Route path="applications/:id" element={<ApplicationDetailPage />} />
             <Route path="profile" element={<ProfileHubPage />} />
             <Route path="profile/personal" element={<PersonalDetailsPage />} />
             <Route path="profile/education" element={<EducationPage />} />

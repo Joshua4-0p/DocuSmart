@@ -13,6 +13,9 @@ export interface User {
   language: 'en' | 'fr'
   createdAt: string
   isEmailVerified: boolean
+  username?: string
+  bio?: string
+  profilePublic?: boolean
 }
 
 export interface LoginCredentials {

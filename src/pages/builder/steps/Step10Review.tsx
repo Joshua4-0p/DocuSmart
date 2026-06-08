@@ -1,11 +1,15 @@
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { BrainCircuit, Package } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { StrengthScoreCard } from '@/components/builder/StrengthScoreCard'
 import { ExportButton } from '@/components/builder/ExportButton'
 import { CompanionDocPrompt } from '@/components/builder/CompanionDocPrompt'
 import { OnboardingTooltip } from '@/components/builder/OnboardingTooltip'
+import { BundleExportModal } from '@/components/builder/BundleExportModal'
 import { useBuilderStore } from '@/store/builder.store'
+import { useAuthStore } from '@/store/auth.store'
 import { aiApi } from '@/lib/api/ai.api'
 import { documentApi } from '@/lib/api/document.api'
 import { useToast } from '@/components/ui/toast'
@@ -15,9 +19,12 @@ export function Step10Review() {
   const navigate = useNavigate()
   const { toast } = useToast()
   const state = useBuilderStore()
+  const { user } = useAuthStore()
+  const isPro = user?.plan === 'pro' || user?.plan === 'pro_cancelling' || user?.plan === 'one_time'
   const [checking, setChecking] = React.useState(false)
   const [saved, setSaved] = React.useState(false)
   const [showCompanion, setShowCompanion] = React.useState(false)
+  const [bundleOpen, setBundleOpen] = React.useState(false)
 
   // Auto-run strength check on mount
   React.useEffect(() => {
@@ -89,6 +96,26 @@ export function Step10Review() {
           />
         </div>
 
+        {/* Pro features row */}
+        <div className="flex gap-2">
+          {isPro && (
+            <Button variant="outline" className="flex-1 gap-2" onClick={() => setBundleOpen(true)}>
+              <Package className="size-4" />
+              {t('bundle.exportAll')}
+            </Button>
+          )}
+          {state.documentType === 'cv' && (
+            <Button
+              variant="outline"
+              className="flex-1 gap-2"
+              onClick={() => void navigate(`/documents/${state.documentId}/interview-coach`)}
+            >
+              <BrainCircuit className="size-4" />
+              {t('interview.prepare')}
+            </Button>
+          )}
+        </div>
+
         {/* Save */}
         <button
           type="button"
@@ -99,6 +126,8 @@ export function Step10Review() {
           {saved ? t('builder.savedToDocuments') : t('builder.saveAndExit')}
         </button>
       </div>
+
+      <BundleExportModal open={bundleOpen} onClose={() => setBundleOpen(false)} />
 
       <CompanionDocPrompt
         visible={showCompanion}

@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Copy, Check, Globe } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -162,6 +162,93 @@ function NotificationsTab() {
   )
 }
 
+function ProfileLinkTab() {
+  const { t } = useTranslation()
+  const { toast } = useToast()
+  const { user, updateUser } = useAuthStore()
+  const [username, setUsername] = React.useState(user?.username ?? '')
+  const [bio, setBio] = React.useState(user?.bio ?? '')
+  const [publicProfile, setPublicProfile] = React.useState(user?.profilePublic ?? false)
+  const [saving, setSaving] = React.useState(false)
+  const [copied, setCopied] = React.useState(false)
+
+  const profileUrl = `${window.location.origin}/${username}`
+
+  const handleSave = async () => {
+    if (!username.trim()) return
+    setSaving(true)
+    try {
+      await authApi.updateProfile({ username: username.trim(), bio: bio.trim() || undefined, profilePublic: publicProfile })
+      updateUser({ username: username.trim(), bio: bio.trim() || undefined, profilePublic: publicProfile })
+      toast(t('common.saved'), 'success')
+    } catch {
+      toast(t('common.error'), 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleCopy = () => {
+    void navigator.clipboard.writeText(profileUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
+  return (
+    <div className="flex flex-col gap-6 max-w-sm">
+      <div className="p-4 rounded-xl border border-border bg-card flex items-start gap-3">
+        <Globe className="size-5 text-primary shrink-0 mt-0.5" />
+        <div>
+          <p className="text-sm font-medium">{t('settings.profileLinkTitle')}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">{t('settings.profileLinkDesc')}</p>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label>{t('settings.username')}</Label>
+        <Input
+          value={username}
+          onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}
+          placeholder="your-name"
+        />
+        <p className="text-xs text-muted-foreground">{t('settings.usernameHint')}</p>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <Label>{t('settings.bio')}</Label>
+        <Input
+          value={bio}
+          onChange={(e) => setBio(e.target.value.slice(0, 160))}
+          placeholder={t('settings.bioPlaceholder')}
+        />
+        <p className="text-xs text-muted-foreground text-right">{bio.length}/160</p>
+      </div>
+
+      <div className="flex items-center justify-between rounded-xl border bg-card px-4 py-3 min-h-11">
+        <div>
+          <p className="text-sm font-medium">{t('settings.makeProfilePublic')}</p>
+          <p className="text-xs text-muted-foreground">{t('settings.makeProfilePublicDesc')}</p>
+        </div>
+        <Switch checked={publicProfile} onCheckedChange={setPublicProfile} />
+      </div>
+
+      {username && publicProfile && (
+        <div className="flex items-center gap-2 p-3 rounded-xl border border-border bg-muted/30">
+          <p className="text-xs text-muted-foreground flex-1 truncate">{profileUrl}</p>
+          <button type="button" onClick={handleCopy} className="text-xs text-primary hover:underline flex items-center gap-1 shrink-0">
+            {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+            {copied ? t('common.copied') : t('common.copy')}
+          </button>
+        </div>
+      )}
+
+      <Button onClick={() => void handleSave()} disabled={saving || !username.trim()} className="w-fit">
+        {saving ? <><Loader2 className="size-4 animate-spin mr-2" />{t('common.saving')}</> : t('settings.saveChanges')}
+      </Button>
+    </div>
+  )
+}
+
 function DangerZoneTab() {
   const { t } = useTranslation()
   const { logout } = useAuthStore()
@@ -212,11 +299,13 @@ export function SettingsPage() {
           <TabsTrigger value="general">{t('settings.tabs.general')}</TabsTrigger>
           <TabsTrigger value="security">{t('settings.tabs.security')}</TabsTrigger>
           <TabsTrigger value="notifications">{t('settings.tabs.notifications')}</TabsTrigger>
+          <TabsTrigger value="profileLink">{t('settings.tabs.profileLink')}</TabsTrigger>
           <TabsTrigger value="danger">{t('settings.tabs.danger')}</TabsTrigger>
         </TabsList>
         <TabsContent value="general"><GeneralTab /></TabsContent>
         <TabsContent value="security"><SecurityTab /></TabsContent>
         <TabsContent value="notifications"><NotificationsTab /></TabsContent>
+        <TabsContent value="profileLink"><ProfileLinkTab /></TabsContent>
         <TabsContent value="danger"><DangerZoneTab /></TabsContent>
       </Tabs>
     </div>

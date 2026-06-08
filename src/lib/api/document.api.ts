@@ -37,6 +37,14 @@ function delay<T>(value: T, ms = 60): Promise<T> {
 export const documentApi = {
   list: (): Promise<DocDocument[]> => delay(loadDocs()),
 
+  listByUser: (userId: string): Promise<DocDocument[]> => {
+    try {
+      const raw = localStorage.getItem(`ds-documents-${userId}`)
+      const docs = raw ? (JSON.parse(raw) as DocDocument[]) : []
+      return delay(docs)
+    } catch { return delay([]) }
+  },
+
   get: (id: string): Promise<DocDocument | null> => {
     const doc = loadDocs().find((d) => d.id === id) ?? null
     return delay(doc)

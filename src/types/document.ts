@@ -67,6 +67,8 @@ export interface DocDocument {
   generatedContent: Record<string, string>
   jdMatchResult?: JDMatchResult
   strengthScore?: StrengthScore
+  isPublic?: boolean
+  publicUrl?: string
   createdAt: string
   updatedAt: string
 }

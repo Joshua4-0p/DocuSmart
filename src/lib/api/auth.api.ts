@@ -11,6 +11,9 @@ type MockUser = {
   password: string
   language: 'en' | 'fr'
   createdAt: string
+  username?: string
+  bio?: string
+  profilePublic?: boolean
 }
 
 const MOCK_USERS_KEY = 'ds-mock-users'
@@ -107,14 +110,24 @@ export const authApi = {
     return Promise.resolve(buildAuthResponse(user).user)
   },
 
-  updateProfile: (data: { name?: string }): Promise<void> => {
+  updateProfile: (data: { name?: string; username?: string; bio?: string; profilePublic?: boolean }): Promise<void> => {
     const id = getCurrentUserId()
     const users = getMockUsers()
     const idx = users.findIndex((u) => u.id === id)
     if (idx === -1) return Promise.reject(new Error('Not authenticated'))
     if (data.name !== undefined) users[idx]!.name = data.name
+    if (data.username !== undefined) users[idx]!.username = data.username
+    if (data.bio !== undefined) users[idx]!.bio = data.bio
+    if (data.profilePublic !== undefined) users[idx]!.profilePublic = data.profilePublic
     saveMockUsers(users)
     return Promise.resolve()
+  },
+
+  getUserByUsername: (username: string): Promise<{ id: string; name: string; email: string; username?: string; avatarUrl?: string; bio?: string; profilePublic?: boolean } | null> => {
+    const users = getMockUsers()
+    const user = users.find((u) => u.username === username)
+    if (!user) return Promise.resolve(null)
+    return Promise.resolve({ id: user.id, name: user.name, email: user.email, username: user.username, bio: user.bio, profilePublic: user.profilePublic })
   },
 
   changePassword: (currentPassword: string, newPassword: string): Promise<void> => {

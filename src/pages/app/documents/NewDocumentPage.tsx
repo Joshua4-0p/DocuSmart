@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { UpgradePromptModal } from '@/components/shared/UpgradePromptModal'
 import {
   type DocumentType,
   type CompanyType,
@@ -16,6 +17,7 @@ import {
   DEFAULT_SECTION_ORDER,
 } from '@/types/document'
 import { documentApi } from '@/lib/api/document.api'
+import { useAuthStore } from '@/store/auth.store'
 
 const ALL_TYPES: DocumentType[] = [
   'cv', 'cover_letter', 'motivation_letter', 'recommendation_letter',
@@ -34,9 +36,12 @@ const COUNTRIES = [
 export function NewDocumentPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const { user } = useAuthStore()
+  const isPro = user?.plan === 'pro' || user?.plan === 'pro_cancelling' || user?.plan === 'one_time'
   const [phase, setPhase] = React.useState<'type' | 'context'>('type')
   const [selectedType, setSelectedType] = React.useState<DocumentType | null>(null)
   const [creating, setCreating] = React.useState(false)
+  const [showUpgrade, setShowUpgrade] = React.useState(false)
 
   // Context form state
   const [jobTitle, setJobTitle] = React.useState('')
@@ -78,6 +83,7 @@ export function NewDocumentPage() {
 
   return (
     <div className="flex-1 p-6 lg:p-8 overflow-y-auto">
+      <UpgradePromptModal open={showUpgrade} onClose={() => setShowUpgrade(false)} featureName={t('newDocument.proTypeFeature')} />
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -106,25 +112,31 @@ export function NewDocumentPage() {
               <p className="text-sm font-semibold mb-4">{t('newDocument.chooseType')}</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
                 {ALL_TYPES.map((type) => {
-                  const isPro = !isFree(type)
+                  const isProType = !isFree(type)
                   const isSelected = selectedType === type
+                  const isUnlocked = !isProType || isPro
                   return (
                     <button
                       key={type}
                       type="button"
-                      onClick={() => !isPro && setSelectedType(type)}
-                      disabled={isPro}
+                      onClick={() => {
+                        if (isUnlocked) {
+                          setSelectedType(type)
+                        } else {
+                          setShowUpgrade(true)
+                        }
+                      }}
                       className={`flex flex-col items-start text-left rounded-xl border-2 p-4 transition-all ${
                         isSelected
                           ? 'border-primary bg-primary/5 shadow-sm'
-                          : isPro
-                            ? 'border-border bg-muted/30 opacity-50 cursor-not-allowed'
+                          : isProType && !isPro
+                            ? 'border-border bg-muted/30 opacity-60 hover:opacity-80 hover:border-ds-premium/40 cursor-pointer'
                             : 'border-border bg-card hover:border-primary/40 hover:shadow-sm'
                       }`}
                     >
                       <div className="flex items-center justify-between w-full mb-1.5">
                         <span className="font-semibold text-sm">{DOCUMENT_TYPE_LABELS[type]}</span>
-                        {isPro ? (
+                        {isProType ? (
                           <Badge className="bg-ds-premium/10 text-ds-premium-foreground border-ds-premium/20 text-[10px] px-1.5">
                             Pro
                           </Badge>

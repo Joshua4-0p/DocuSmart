@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Settings,
   LayoutTemplate,
+  Kanban,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
@@ -25,6 +26,7 @@ const primaryNav = [
   { key: 'dashboard', icon: LayoutDashboard, path: '/dashboard' },
   { key: 'documents', icon: FileText, path: '/documents' },
   { key: 'templates', icon: LayoutTemplate, path: '/templates' },
+  { key: 'applications', icon: Kanban, path: '/applications' },
 ] as const
 
 const profileSections = [
