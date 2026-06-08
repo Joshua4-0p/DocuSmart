@@ -12,7 +12,7 @@ import { aiApi } from '@/lib/api/ai.api'
 
 export function Step5Experience() {
   const { t } = useTranslation()
-  const { context, generatedContent, setGeneratedContent, selectedSections, toggleSection } = useBuilderStore()
+  const { context, language, generatedContent, setGeneratedContent, selectedSections, toggleSection } = useBuilderStore()
   const profile = getProfileSnapshot()
   const experiences = profile.experience
   const [rewritingId, setRewritingId] = React.useState<string | null>(null)
@@ -30,7 +30,7 @@ export function Step5Experience() {
     }
     setRewritingId(expId)
     try {
-      const bullets = await aiApi.rewriteBullets(exp, context.jobTitle, context.language)
+      const bullets = await aiApi.rewriteBullets(exp, context.jobTitle, language)
       setGeneratedContent(key, bullets.join('\n'))
     } finally {
       setRewritingId(null)

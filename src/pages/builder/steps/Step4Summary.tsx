@@ -9,7 +9,7 @@ import { aiApi } from '@/lib/api/ai.api'
 
 export function Step4Summary() {
   const { t } = useTranslation()
-  const { context, generatedContent, setGeneratedContent, toggleSection, selectedSections } = useBuilderStore()
+  const { context, language, setContext, generatedContent, setGeneratedContent, toggleSection, selectedSections } = useBuilderStore()
   const [loading, setLoading] = React.useState(false)
   const [improving, setImproving] = React.useState(false)
   const summary = generatedContent['summary'] ?? ''
@@ -21,7 +21,7 @@ export function Step4Summary() {
       const text = await aiApi.generateSummary(
         context.jobTitle,
         context.companyName ?? '',
-        context.language,
+        language,
       )
       setGeneratedContent('summary', text)
       if (!selectedSections.includes('summary')) {
@@ -36,7 +36,7 @@ export function Step4Summary() {
     if (!summary) return
     setImproving(true)
     try {
-      const result = await aiApi.improveText(summary, context.jobTitle, context.language)
+      const result = await aiApi.improveText(summary, context.jobTitle, language)
       if (!result.limitReached) {
         setGeneratedContent('summary', result.improved)
       }
@@ -50,9 +50,30 @@ export function Step4Summary() {
       <OnboardingTooltip tooltipKey="step4-ai" textKey="builder.onboardingStep4" side="bottom" className="block mb-1">
         <h2 className="text-xl font-bold">{t('builder.step4Title')}</h2>
       </OnboardingTooltip>
-      <p className="text-sm text-muted-foreground mb-6">
+      <p className="text-sm text-muted-foreground mb-3">
         A tailored 3-sentence summary for your target role.
       </p>
+
+      {/* Language selector — controls which language AI generates in */}
+      <div className="flex items-center gap-2 mb-5">
+        <span className="text-xs text-muted-foreground">AI generates in:</span>
+        <div className="flex gap-1">
+          {(['en', 'fr'] as const).map((lang) => (
+            <button
+              key={lang}
+              type="button"
+              onClick={() => setContext({ language: lang })}
+              className={`px-2.5 py-0.5 rounded text-xs font-medium border transition-colors ${
+                language === lang
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'border-border text-muted-foreground hover:border-primary/40'
+              }`}
+            >
+              {lang === 'en' ? 'English' : 'Français'}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="max-w-xl space-y-4">
         {/* Textarea */}

@@ -123,7 +123,7 @@ export const aiApi = {
   // FR-021: Inline "Improve this" — respects 2/day limit
   improveText: async (
     text: string,
-    context: string,
+    _context: string,
     language: 'en' | 'fr',
   ): Promise<{ improved: string; limitReached: boolean }> => {
     const usage = getAiUsageToday()
@@ -135,20 +135,26 @@ export const aiApi = {
       await sleep(rand(1000, 2200))
       incrementAiUsage()
 
-      // Simple mock improvement: capitalise, add quantification, tighten
-      const improved = text
-        .replace(/\bhelped\b/gi, 'enabled')
-        .replace(/\bworked on\b/gi, 'delivered')
-        .replace(/\bresponsible for\b/gi, 'led')
-        .replace(/\bwas involved in\b/gi, 'spearheaded')
-        .trim()
+      let improved: string
+      if (language === 'fr') {
+        // French: replace weak French phrases with stronger equivalents
+        improved = text
+          .replace(/\bj'ai aidé\b/gi, 'j\'ai permis')
+          .replace(/\bj'ai travaillé sur\b/gi, 'j\'ai livré')
+          .replace(/\bresponsable de\b/gi, 'en charge de')
+          .replace(/\bj'étais impliqué dans\b/gi, 'j\'ai piloté')
+          .trim()
+      } else {
+        // English: replace weak verbs with stronger action verbs
+        improved = text
+          .replace(/\bhelped\b/gi, 'enabled')
+          .replace(/\bworked on\b/gi, 'delivered')
+          .replace(/\bresponsible for\b/gi, 'led')
+          .replace(/\bwas involved in\b/gi, 'spearheaded')
+          .trim()
+      }
 
-      const suffix =
-        language === 'fr'
-          ? ` (contexte : ${context || 'amélioration générale'})`
-          : ` (optimised for: ${context || 'clarity and impact'})`
-
-      return { improved: improved || text + suffix, limitReached: false }
+      return { improved: improved || text, limitReached: false }
     })
   },
 

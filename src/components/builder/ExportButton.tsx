@@ -78,8 +78,20 @@ export function ExportButton({ format, documentTitle, onExportDone }: ExportButt
         style.id = 'ds-print-style'
         style.textContent = `
           @media print {
-            body > * { display: none !important; }
-            #horizon-template, #cover-letter-template { display: block !important; }
+            body * { visibility: hidden !important; }
+            .preview-page-wrap,
+            .preview-page-wrap * { visibility: visible !important; }
+            .preview-page-wrap {
+              position: absolute !important;
+              top: 0 !important;
+              left: 0 !important;
+              zoom: 1 !important;
+              width: 794px !important;
+              box-shadow: none !important;
+              border-radius: 0 !important;
+              overflow: visible !important;
+              margin: 0 !important;
+            }
             @page { margin: 0; size: A4; }
           }
         `
