@@ -1,10 +1,11 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { Info } from 'lucide-react'
+import { Info, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useBuilderStore } from '@/store/builder.store'
-import { getProfileSnapshot } from '@/lib/api/profile.api'
+import { getProfileSnapshot, profileApi } from '@/lib/api/profile.api'
+import type { Skill } from '@/types/profile'
 
 export function Step7Skills() {
   const { t } = useTranslation()
@@ -26,19 +27,28 @@ export function Step7Skills() {
     setGeneratedContent('excluded-skills', JSON.stringify(next))
   }
 
-  const matchedSkillNames = new Set(jdMatchResult?.matchedSkills.map((s) => s.toLowerCase()) ?? [])
+  const [extraSkills, setExtraSkills] = React.useState<Skill[]>([])
+  const [newSkillName, setNewSkillName] = React.useState('')
+  const [adding, setAdding] = React.useState(false)
 
-  if (!skills.length) {
-    return (
-      <div className="flex-1 p-8 flex flex-col items-center justify-center">
-        <p className="text-muted-foreground mb-3">{t('builder.skillsEmpty')}</p>
-        <Link to="/profile/skills" className="text-primary text-sm underline">{t('builder.addToProfile')}</Link>
-      </div>
-    )
+  const handleAddSkill = async () => {
+    const name = newSkillName.trim()
+    if (!name) return
+    setAdding(true)
+    try {
+      const created = await profileApi.createSkill({ name, level: 'intermediate' })
+      setExtraSkills((prev) => [...prev, created])
+      setNewSkillName('')
+    } finally {
+      setAdding(false)
+    }
   }
 
-  const techSkills = skills.filter((s) => !s.category || !['soft'].includes(s.category.toLowerCase()))
-  const softSkills = skills.filter((s) => s.category?.toLowerCase() === 'soft')
+  const allSkills = [...skills, ...extraSkills]
+  const matchedSkillNames = new Set(jdMatchResult?.matchedSkills.map((s) => s.toLowerCase()) ?? [])
+
+  const techSkills = allSkills.filter((s) => !s.category || !['soft'].includes(s.category.toLowerCase()))
+  const softSkills = allSkills.filter((s) => s.category?.toLowerCase() === 'soft')
 
   return (
     <div className="flex-1 overflow-y-auto p-6 lg:p-8">
@@ -61,6 +71,13 @@ export function Step7Skills() {
       )}
 
       <div className="max-w-2xl space-y-5">
+        {allSkills.length === 0 && (
+          <p className="text-muted-foreground text-sm">
+            {t('builder.skillsEmpty')}{' '}
+            <Link to="/profile/skills" className="text-primary underline">{t('builder.addToProfile')}</Link>
+          </p>
+        )}
+
         {techSkills.length > 0 && (
           <div>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
@@ -121,10 +138,43 @@ export function Step7Skills() {
           </div>
         )}
 
-        <p className="text-xs text-muted-foreground">
-          Click a skill to toggle it in/out of your document.
-          {jdMatchResult && ' Highlighted skills match the job description.'}
-        </p>
+        {/* Inline skill adder */}
+        <div className="pt-1 border-t border-border">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            Add a skill for this document
+          </p>
+          <p className="text-xs text-muted-foreground mb-3">
+            Adds to your master profile and includes it here automatically.
+          </p>
+          <form
+            onSubmit={(e) => { e.preventDefault(); void handleAddSkill() }}
+            className="flex gap-2"
+          >
+            <input
+              type="text"
+              value={newSkillName}
+              onChange={(e) => setNewSkillName(e.target.value)}
+              placeholder="e.g. React, Leadership, SQL…"
+              maxLength={50}
+              className="flex-1 h-9 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
+            <button
+              type="submit"
+              disabled={adding || !newSkillName.trim()}
+              className="flex items-center gap-1.5 h-9 px-3 rounded-lg bg-primary text-primary-foreground text-xs font-medium disabled:opacity-40 hover:bg-primary/90 transition-colors"
+            >
+              <Plus className="size-3.5" />
+              {adding ? 'Adding…' : 'Add'}
+            </button>
+          </form>
+        </div>
+
+        {allSkills.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Click a skill to toggle it in/out of your document.
+            {jdMatchResult && ' Highlighted skills match the job description.'}
+          </p>
+        )}
       </div>
     </div>
   )

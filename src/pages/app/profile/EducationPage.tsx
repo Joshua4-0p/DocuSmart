@@ -7,12 +7,40 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, SelectSeparator } from '@/components/ui/select'
 import { ProfileEntryList, EntryCard } from '@/components/shared/ProfileEntryList'
 import { UniversityAutocomplete } from '@/components/profile/UniversityAutocomplete'
 import { educationSchema, type EducationFormValues } from '@/lib/schemas/profile.schema'
 import { profileApi } from '@/lib/api/profile.api'
+import { getDegreeLabel } from '@/lib/templates/templateSettings'
 import type { Education } from '@/types/profile'
+
+const ENGLISH_DEGREES: Array<[string, string]> = [
+  ['fslc',    'FSLC — First School Leaving Certificate'],
+  ['gce-ol',  'GCE O Level — Ordinary Level'],
+  ['gce-al',  'GCE A Level — Advanced Level'],
+  ['tvee',    'TVEE — Technical & Vocational Education'],
+  ['hnd',     'HND — Higher National Diploma'],
+  ['bsc',     'B.Sc — Bachelor of Science'],
+  ['beng',    'B.Eng — Bachelor of Engineering'],
+  ['btech',   'B.Tech — Bachelor of Technology'],
+  ['msc',     'M.Sc — Master of Science'],
+  ['meng',    'M.Eng — Master of Engineering'],
+  ['phd',     'PhD — Doctor of Philosophy'],
+]
+
+const FRENCH_DEGREES: Array<[string, string]> = [
+  ['cep',          'CEP — Certificat d\'Études Primaires'],
+  ['bepc',         'BEPC — Brevet d\'Études du Premier Cycle'],
+  ['probatoire',   'Probatoire'],
+  ['bac',          'Baccalauréat (BAC)'],
+  ['bts',          'BTS — Brevet de Technicien Supérieur'],
+  ['licence',      'Licence'],
+  ['licence-pro',  'Licence Professionnelle'],
+  ['master',       'Master'],
+  ['master-pro',   'Master Professionnel'],
+  ['phd',          'Doctorat (PhD)'],
+]
 
 function EducationForm({
   defaultValues,
@@ -29,7 +57,8 @@ function EducationForm({
     mode: 'onBlur',
     defaultValues: {
       institution: defaultValues?.institution ?? '',
-      degreeType: defaultValues?.degreeType ?? 'bachelor',
+      degreeType: defaultValues?.degreeType ?? 'bsc',
+      customDegreeType: defaultValues?.customDegreeType ?? '',
       fieldOfStudy: defaultValues?.fieldOfStudy ?? '',
       startDate: defaultValues?.startDate ?? '',
       endDate: defaultValues?.endDate ?? '',
@@ -43,6 +72,7 @@ function EducationForm({
     },
   })
   const ongoing = watch('ongoing')
+  const degreeType = watch('degreeType')
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -68,13 +98,29 @@ function EducationForm({
           <Select value={field.value} onValueChange={field.onChange}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
-              {(['bachelor', 'master', 'phd', 'hnd', 'bts', 'certificate', 'other'] as const).map((d) => (
-                <SelectItem key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</SelectItem>
+              <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">English System</div>
+              {ENGLISH_DEGREES.map(([val, label]) => (
+                <SelectItem key={val} value={val}>{label}</SelectItem>
               ))}
+              <SelectSeparator />
+              <div className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Système Francophone</div>
+              {FRENCH_DEGREES.map(([val, label]) => (
+                <SelectItem key={`fr-${val}`} value={val}>{label}</SelectItem>
+              ))}
+              <SelectSeparator />
+              <SelectItem value="certificate">Certificate (General)</SelectItem>
+              <SelectItem value="other">Other (specify below)</SelectItem>
             </SelectContent>
           </Select>
         )} />
       </div>
+      {degreeType === 'other' && (
+        <div className="flex flex-col gap-1.5">
+          <Label>Degree Name *</Label>
+          <Input placeholder="e.g. Professional Certificate, Diplôme d'État…" {...register('customDegreeType')} />
+          <p className="text-xs text-muted-foreground">This name will appear on your CV exactly as you type it.</p>
+        </div>
+      )}
       <div className="flex flex-col gap-1.5">
         <Label>Field of Study *</Label>
         <Input placeholder="Computer Science" aria-invalid={!!errors.fieldOfStudy} {...register('fieldOfStudy')} />
@@ -107,7 +153,7 @@ function EducationForm({
       </div>
       <div className="flex flex-col gap-1.5">
         <Label>GPA / Grade</Label>
-        <Input placeholder="16/20 or 3.8/4.0" {...register('gpa')} />
+        <Input placeholder="e.g. 16/20 · 3.8/4.0 · 22 points (GCE)" {...register('gpa')} />
         <div className="flex items-center gap-2 mt-1">
           <Controller control={control} name="showGpa" render={({ field }) => (
             <Switch checked={field.value} onCheckedChange={field.onChange} />
@@ -155,7 +201,7 @@ export function EducationPage() {
       renderCard={(e, onEdit, onDelete) => (
         <EntryCard
           key={e.id}
-          title={`${e.degreeType.toUpperCase()} in ${e.fieldOfStudy}`}
+          title={`${getDegreeLabel(e)} in ${e.fieldOfStudy}`}
           subtitle={e.institution}
           dates={`${e.startDate} – ${e.ongoing ? 'Present' : (e.endDate ?? '')}`}
           description={e.description}

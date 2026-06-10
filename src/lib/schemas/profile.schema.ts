@@ -23,7 +23,17 @@ export const personalDetailsSchema = z.object({
 
 export const educationSchema = z.object({
   institution: z.string().min(1),
-  degreeType: z.enum(['bachelor', 'master', 'phd', 'hnd', 'bts', 'certificate', 'other']),
+  degreeType: z.enum([
+    'fslc', 'gce-ol', 'gce-al', 'tvee',
+    'hnd', 'bsc', 'beng', 'btech',
+    'msc', 'meng',
+    'cep', 'bepc', 'probatoire', 'bac',
+    'bts', 'licence', 'licence-pro',
+    'master', 'master-pro',
+    'phd',
+    'bachelor', 'certificate', 'other',
+  ]),
+  customDegreeType: optionalString,
   fieldOfStudy: z.string().min(1),
   startDate: z.string().min(1),
   endDate: optionalString,

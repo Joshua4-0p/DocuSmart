@@ -7,6 +7,7 @@ import {
   resolveSpacingMultiplier,
   getSectionLabels,
   hexWithAlpha,
+  getDegreeLabel,
 } from '../../lib/templates/templateSettings'
 
 interface HorizonProps {
@@ -181,7 +182,7 @@ function HorizonTemplateInner({ state, scale = 1 }: HorizonProps) {
                     <div key={edu.id} style={{ marginBottom: `${Math.round(10 * sp)}px` }}>
                       <div style={entryHeaderStyle}>
                         <div>
-                          <p style={entryTitle}>{edu.degreeType.toUpperCase()} in {edu.fieldOfStudy}</p>
+                          <p style={entryTitle}>{getDegreeLabel(edu)} in {edu.fieldOfStudy}</p>
                           <p style={entrySubtitle}>{edu.institution}{edu.city ? `, ${edu.city}` : ''}</p>
                         </div>
                         <span style={entryDate}>{fmt(edu.startDate)} – {edu.ongoing ? 'Present' : fmt(edu.endDate)}</span>

@@ -4,16 +4,7 @@ import { GripVertical, Info } from 'lucide-react'
 import { ToggleCard } from '@/components/builder/ToggleCard'
 import { useBuilderStore } from '@/store/builder.store'
 import { getProfileSnapshot } from '@/lib/api/profile.api'
-
-const DEGREE_LABELS: Record<string, string> = {
-  bachelor: "Bachelor's",
-  master: "Master's",
-  phd: 'PhD',
-  hnd: 'HND',
-  bts: 'BTS',
-  certificate: 'Certificate',
-  other: 'Other',
-}
+import { getDegreeLabel } from '@/lib/templates/templateSettings'
 
 export function Step6Education() {
   const { t } = useTranslation()
@@ -69,7 +60,7 @@ export function Step6Education() {
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="font-semibold text-sm">
-                  {DEGREE_LABELS[edu.degreeType] ?? edu.degreeType} in {edu.fieldOfStudy}
+                  {getDegreeLabel(edu)} in {edu.fieldOfStudy}
                 </p>
                 <p className="text-xs text-muted-foreground">{edu.institution}</p>
                 <p className="text-xs text-muted-foreground">

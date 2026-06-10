@@ -131,6 +131,43 @@ export function getSectionLabels(lang: 'en' | 'fr'): Record<string, string> {
   }
 }
 
+// ── Degree labels ────────────────────────────────────────────────────────────
+
+export const DEGREE_LABELS: Record<string, string> = {
+  // English system
+  fslc:        'FSLC',
+  'gce-ol':    'GCE O Level',
+  'gce-al':    'GCE A Level',
+  tvee:        'TVEE',
+  hnd:         'HND',
+  bsc:         'B.Sc',
+  beng:        'B.Eng',
+  btech:       'B.Tech',
+  msc:         'M.Sc',
+  meng:        'M.Eng',
+  // French system
+  cep:         'CEP',
+  bepc:        'BEPC',
+  probatoire:  'Probatoire',
+  bac:         'Baccalauréat',
+  bts:         'BTS',
+  licence:     'Licence',
+  'licence-pro': 'Licence Professionnelle',
+  master:      'Master',
+  'master-pro': 'Master Professionnel',
+  // Shared
+  phd:         'PhD',
+  // Legacy
+  bachelor:    "Bachelor's",
+  certificate: 'Certificate',
+  other:       'Other',
+}
+
+export function getDegreeLabel(edu: { degreeType: string; customDegreeType?: string }): string {
+  if (edu.degreeType === 'other' && edu.customDegreeType) return edu.customDegreeType
+  return DEGREE_LABELS[edu.degreeType] ?? edu.degreeType.toUpperCase()
+}
+
 // ── Template catalog ─────────────────────────────────────────────────────────
 
 export interface TemplateInfo {

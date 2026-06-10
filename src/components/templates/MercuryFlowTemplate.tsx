@@ -7,6 +7,7 @@ import {
   resolveSpacingMultiplier,
   getSectionLabels,
   hexWithAlpha,
+  getDegreeLabel,
 } from '../../lib/templates/templateSettings'
 
 interface Props { state: BuilderState; scale?: number }
@@ -125,7 +126,7 @@ function MercuryFlowInner({ state, scale = 1 }: Props) {
                         <span style={{ fontSize: '7.5pt', color: '#999' }}>{fmt(edu.startDate)}<br />–<br />{edu.ongoing ? 'Present' : fmt(edu.endDate)}</span>
                       </div>
                       <div style={{ flex: 1, borderLeft: `2px solid ${hexWithAlpha(accent, 0.2)}`, paddingLeft: '12px' }}>
-                        <p style={entryTitle}>{edu.degreeType.toUpperCase()} in {edu.fieldOfStudy}</p>
+                        <p style={entryTitle}>{getDegreeLabel(edu)} in {edu.fieldOfStudy}</p>
                         <p style={entryMeta}>{edu.institution}{edu.city ? `, ${edu.city}` : ''}</p>
                       </div>
                     </div>

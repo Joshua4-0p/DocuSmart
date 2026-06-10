@@ -6,6 +6,7 @@ import {
   resolveFontPairing,
   resolveSpacingMultiplier,
   getSectionLabels,
+  getDegreeLabel,
 } from '../../lib/templates/templateSettings'
 
 interface Props { state: BuilderState; scale?: number }
@@ -158,7 +159,7 @@ function AtlanticBlueInner({ state, scale = 1 }: Props) {
                       <div key={edu.id} style={{ marginBottom: `${Math.round(10 * sp)}px` }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                           <div>
-                            <p style={entryTitle}>{edu.degreeType.toUpperCase()} in {edu.fieldOfStudy}</p>
+                            <p style={entryTitle}>{getDegreeLabel(edu)} in {edu.fieldOfStudy}</p>
                             <p style={entryMeta}>{edu.institution}</p>
                           </div>
                           <span style={dateStyle}>{fmt(edu.startDate)} – {edu.ongoing ? 'Present' : fmt(edu.endDate)}</span>

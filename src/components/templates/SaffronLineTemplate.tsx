@@ -7,6 +7,7 @@ import {
   resolveSpacingMultiplier,
   getSectionLabels,
   hexWithAlpha,
+  getDegreeLabel,
 } from '../../lib/templates/templateSettings'
 
 interface Props { state: BuilderState; scale?: number }
@@ -121,7 +122,7 @@ function SaffronLineInner({ state, scale = 1 }: Props) {
                       {profile.education.map((edu) => (
                         <div key={edu.id} style={{ marginBottom: `${Math.round(9 * sp)}px` }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <div><p style={entryTitle}>{edu.degreeType.toUpperCase()} in {edu.fieldOfStudy}</p><p style={entryMeta}>{edu.institution}</p></div>
+                            <div><p style={entryTitle}>{getDegreeLabel(edu)} in {edu.fieldOfStudy}</p><p style={entryMeta}>{edu.institution}</p></div>
                             <span style={dateStyle}>{fmt(edu.startDate)} – {edu.ongoing ? 'Present' : fmt(edu.endDate)}</span>
                           </div>
                         </div>

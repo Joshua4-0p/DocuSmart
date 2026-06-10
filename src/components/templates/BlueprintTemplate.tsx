@@ -7,6 +7,7 @@ import {
   resolveSpacingMultiplier,
   getSectionLabels,
   hexWithAlpha,
+  getDegreeLabel,
 } from '../../lib/templates/templateSettings'
 
 interface Props { state: BuilderState; scale?: number }
@@ -190,7 +191,7 @@ function BlueprintInner({ state, scale = 1 }: Props) {
                         <div key={edu.id} style={{ marginBottom: `${Math.round(10 * sp)}px` }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <div>
-                              <p style={entryTitle}>{edu.degreeType.toUpperCase()} in {edu.fieldOfStudy}</p>
+                              <p style={entryTitle}>{getDegreeLabel(edu)} in {edu.fieldOfStudy}</p>
                               <p style={entryMeta}>{edu.institution}{edu.city ? `, ${edu.city}` : ''}</p>
                             </div>
                             <span style={entryDate}>{fmt(edu.startDate)} – {edu.ongoing ? 'Present' : fmt(edu.endDate)}</span>

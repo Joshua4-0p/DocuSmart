@@ -6,6 +6,7 @@ import {
   resolveFontPairing,
   resolveSpacingMultiplier,
   getSectionLabels,
+  getDegreeLabel,
 } from '../../lib/templates/templateSettings'
 
 interface Props { state: BuilderState; scale?: number }
@@ -134,7 +135,7 @@ function CleanSlateInner({ state, scale = 1 }: Props) {
                       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <div>
                           <p style={entryTitle}>{edu.institution}</p>
-                          <p style={entryMeta}>{edu.degreeType.toUpperCase()} in {edu.fieldOfStudy}{edu.gpa && edu.showGpa ? ` · ${edu.gpa}` : ''}</p>
+                          <p style={entryMeta}>{getDegreeLabel(edu)} in {edu.fieldOfStudy}{edu.gpa && edu.showGpa ? ` · ${edu.gpa}` : ''}</p>
                         </div>
                         <span style={entryDate}>{fmt(edu.startDate)} – {edu.ongoing ? 'Present' : fmt(edu.endDate)}</span>
                       </div>

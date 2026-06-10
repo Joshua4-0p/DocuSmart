@@ -2,7 +2,19 @@ export type ProficiencyLevel = 'beginner' | 'intermediate' | 'advanced' | 'exper
 export type LanguageLevel = 'native' | 'fluent' | 'professional' | 'conversational' | 'basic'
 export type MaritalStatus = 'single' | 'married' | 'divorced' | 'widowed'
 export type EmploymentType = 'full-time' | 'part-time' | 'internship' | 'contract' | 'freelance' | 'volunteer'
-export type DegreeType = "bachelor" | "master" | "phd" | "hnd" | "bts" | "certificate" | "other"
+export type DegreeType =
+  // English system (primary → university)
+  | 'fslc' | 'gce-ol' | 'gce-al' | 'tvee'
+  | 'hnd' | 'bsc' | 'beng' | 'btech'
+  | 'msc' | 'meng'
+  // French system (primary → university)
+  | 'cep' | 'bepc' | 'probatoire' | 'bac'
+  | 'bts' | 'licence' | 'licence-pro'
+  | 'master' | 'master-pro'
+  // Shared
+  | 'phd'
+  // Legacy / generic
+  | 'bachelor' | 'certificate' | 'other'
 export type RefereeRelationship = 'direct-manager' | 'professor' | 'colleague' | 'client' | 'other'
 export type ProjectStatus = 'completed' | 'ongoing'
 
@@ -30,6 +42,7 @@ export interface Education {
   id: string
   institution: string
   degreeType: DegreeType
+  customDegreeType?: string
   fieldOfStudy: string
   startDate: string
   endDate?: string
