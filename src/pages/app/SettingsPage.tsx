@@ -3,13 +3,14 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useTranslation } from 'react-i18next'
 import { useMutation } from '@tanstack/react-query'
-import { Loader2, Copy, Check, Globe } from 'lucide-react'
+import { Loader2, Copy, Check, Globe, ExternalLink } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
+import { QRCodeDisplay } from '@/components/shared/QRCodeDisplay'
 import { PasswordStrengthBar } from '@/components/shared/PasswordStrengthBar'
 import { changePasswordSchema, type ChangePasswordFormValues } from '@/lib/schemas/auth.schema'
 import { authApi } from '@/lib/api/auth.api'
@@ -233,13 +234,30 @@ function ProfileLinkTab() {
       </div>
 
       {username && publicProfile && (
-        <div className="flex items-center gap-2 p-3 rounded-xl border border-border bg-muted/30">
-          <p className="text-xs text-muted-foreground flex-1 truncate">{profileUrl}</p>
-          <button type="button" onClick={handleCopy} className="text-xs text-primary hover:underline flex items-center gap-1 shrink-0">
-            {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
-            {copied ? t('common.copied') : t('common.copy')}
-          </button>
-        </div>
+        <>
+          <div className="flex items-center gap-2 p-3 rounded-xl border border-border bg-muted/30">
+            <p className="text-xs text-muted-foreground flex-1 truncate">{profileUrl}</p>
+            <button type="button" onClick={handleCopy} className="text-xs text-primary hover:underline flex items-center gap-1 shrink-0">
+              {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
+              {copied ? t('common.copied') : t('common.copy')}
+            </button>
+            <a
+              href={profileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Visit your public profile"
+              className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 shrink-0"
+            >
+              <ExternalLink className="size-3" />
+            </a>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <p className="text-xs font-medium text-muted-foreground">QR Code</p>
+            <p className="text-xs text-muted-foreground">Share or print this QR code to link directly to your public profile.</p>
+            <QRCodeDisplay url={profileUrl} />
+          </div>
+        </>
       )}
 
       <Button onClick={() => void handleSave()} disabled={saving || !username.trim()} className="w-fit">

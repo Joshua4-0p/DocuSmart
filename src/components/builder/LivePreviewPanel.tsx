@@ -1,9 +1,19 @@
 import * as React from 'react'
 import { getTemplateComponent } from '@/components/templates'
 import { CoverLetterTemplate } from '@/components/templates/CoverLetterTemplate'
+import { FormalLetterTemplate } from '@/components/templates/FormalLetterTemplate'
 import { PreviewToolbar } from '@/components/builder/PreviewToolbar'
 import { useDebounce } from '@/hooks/useDebounce'
 import type { BuilderState } from '@/types/document'
+
+const FORMAL_LETTER_TYPES = new Set([
+  'motivation_letter',
+  'recommendation_letter',
+  'personal_statement',
+  'research_proposal',
+  'expression_of_interest',
+  'writing_sample',
+])
 
 interface LivePreviewProps {
   state: BuilderState
@@ -44,6 +54,8 @@ export function LivePreviewPanel({ state, mobileView = false }: LivePreviewProps
   const Template =
     debouncedState.documentType === 'cover_letter'
       ? CoverLetterTemplate
+      : FORMAL_LETTER_TYPES.has(debouncedState.documentType)
+      ? FormalLetterTemplate
       : getTemplateComponent(debouncedState.templateId)
 
   const wrapperCls = fullscreen
